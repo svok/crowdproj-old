@@ -143,15 +143,24 @@ public class UserTest {
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .returnResult(User.class)
-//            .getResponseBody()
-//            .blockFirst()
         ;
         assert result_get.getStatus().value() == 200;
+    }
 
-//        User user = result.getResponseBody().collectList().block();
-//        assert user.getId().equals("3");
-//        assert user.getLName().equals("Pikalov");
-//        assert user.getBDateString().equals("1983-06-18");
+    @Test
+    public void test05Session() throws IOException {
+
+        FluxExchangeResult<String> result = webTestClient
+            .get()
+            .uri("/api/new-session")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .returnResult(String.class)
+        ;
+        assert result.getStatus().value() == 200;
+
+        String tag = result.getResponseBody().blockFirst();
+        assert tag.length() > 10;
     }
 
     @Test

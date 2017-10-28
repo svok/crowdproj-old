@@ -1,11 +1,17 @@
 package com.crowdproj.gateway.handlers;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.http.HttpStatus;
 
 import reactor.core.publisher.Mono;
@@ -13,12 +19,17 @@ import reactor.core.publisher.Mono;
 import com.crowdproj.common.models.User;
 import com.crowdproj.common.models.Signin;
 import com.crowdproj.common.models.Signup;
+import com.crowdproj.common.models.Session;
+
 import com.crowdproj.gateway.repositories.UserRepository;
 
 @Service
 public class ApiHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
+
+    @Value("${server.secret}")
+    private String secret;
 
     @Autowired
     private UserRepository userRepository;
@@ -54,6 +65,20 @@ public class ApiHandler {
             .flatMap(user -> ServerResponse.ok().body(Mono.just(user), User.class))
             .switchIfEmpty(ServerResponse.notFound().build())
         ;
+    }
+
+    public Mono<ServerResponse> getNewSession(ServerRequest request) {
+
+        Session session = Session.createNew();
+
+        try {
+            String tag = session.generateToken();
+            return ServerResponse.ok().body(BodyInserters.fromObject(tag));
+        } catch(IOException e) {
+            System.out.println("Ошибка 500 в getNewSession");
+            return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
     }
 
 }

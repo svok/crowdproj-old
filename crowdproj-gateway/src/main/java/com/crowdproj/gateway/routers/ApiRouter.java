@@ -24,14 +24,8 @@ class ApiRouter {
                     .andRoute(POST("/signupTest"), apiHandler::signupTest)
                     .andRoute(GET("/user/{id}"), apiHandler::getUserById)
                     .andRoute(GET("/user"), apiHandler::getUsers)
+                    .andRoute(GET("/new-session"), apiHandler::getNewSession)
                     .andOther(route(RequestPredicates.all(), errorHandler::notFound))
-/*
-                nest(
-                    accept(APPLICATION_JSON),
-                    route(GET(LOCATION_WITH_ADDRESS_PATH), apiHandler::getLocation)
-                        .andRoute(POST(LOCATION_PATH), apiHandler::postLocation)
-                ).andOther(route(RequestPredicates.all(), errorHandler::notFound))
-*/
             );
     }
 }
