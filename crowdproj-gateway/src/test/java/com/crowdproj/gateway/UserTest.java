@@ -40,7 +40,9 @@ public class UserTest {
             .exchange()
             .returnResult(User.class)
         ;
+        System.out.println("RespCode");
         assert result.getStatus().value() == 200;
+        System.out.println(result.getStatus().value());
         List<User> users = result.getResponseBody().collectList().block();
         System.out.println("getUsers " + users.toString());
         assert users.size() == 2;

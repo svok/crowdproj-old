@@ -1,5 +1,8 @@
 package com.crowdproj.gateway.config;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import org.springframework.core.env.Environment;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +13,20 @@ import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
+import org.springframework.web.reactive.HandlerMapping;
+import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.UnicastProcessor;
 
 import reactor.ipc.netty.http.server.HttpServer;
 
 import com.crowdproj.gateway.handlers.ApiHandler;
+import com.crowdproj.gateway.handlers.WsHandler;
 import com.crowdproj.gateway.handlers.ErrorHandler;
 import com.crowdproj.gateway.routers.MainRouter;
-//import com.crowdproj.gateway.services.*;
+
+import com.crowdproj.common.models.Event;
 
 @Configuration
 @EnableWebFlux
@@ -63,4 +73,22 @@ public class HttpServerConfig {
         return MainRouter.doRoute(apiHandler, errorHandler);
     }
 
+/*
+    @Bean
+    public HandlerMapping webSocketMapping(UnicastProcessor<Event> eventPublisher, Flux<Event> events) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("/ws", new WsHandler(eventPublisher, events));
+        SimpleUrlHandlerMapping simpleUrlHandlerMapping = new SimpleUrlHandlerMapping();
+        simpleUrlHandlerMapping.setUrlMap(map);
+
+        //Without the order things break :-/
+        simpleUrlHandlerMapping.setOrder(10);
+        return simpleUrlHandlerMapping;
+    }
+
+    @Bean
+    public WebSocketHandlerAdapter handlerAdapter() {
+        return new WebSocketHandlerAdapter();
+    }
+*/
 }
