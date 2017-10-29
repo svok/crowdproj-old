@@ -27,10 +27,12 @@ public class WsHandler implements WebSocketHandler {
         this.eventPublisher = eventPublisher;
         this.mapper = new ObjectMapper();
         this.outputEvents = Flux.from(events).map(this::toJSON);
+        System.out.println("############### WsHandler constructor");
     }
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
+        System.out.println("############### WsHandler handler");
         WebSocketMessageSubscriber subscriber = new WebSocketMessageSubscriber(eventPublisher);
         session.receive()
                 .map(WebSocketMessage::getPayloadAsText)

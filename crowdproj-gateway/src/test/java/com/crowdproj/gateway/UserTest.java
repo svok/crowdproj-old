@@ -2,6 +2,9 @@ package com.crowdproj.gateway;
 
 import java.io.IOException;
 import java.util.List;
+import java.time.Duration;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.junit.Test;
 import org.junit.FixMethodOrder;
@@ -9,13 +12,19 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.FluxExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
+import org.springframework.web.reactive.socket.client.WebSocketClient;
 
 import reactor.core.publisher.Mono;
 
@@ -27,6 +36,9 @@ import com.crowdproj.common.models.Signup;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserTest {
+
+    @LocalServerPort
+    private String port;
 
     @Autowired
     private WebTestClient webTestClient;
@@ -163,6 +175,28 @@ public class UserTest {
 
         String tag = result.getResponseBody().blockFirst();
         assert tag.length() > 10;
+    }
+
+    @Test
+    public void test05WebSocket() throws IOException, URISyntaxException {
+
+        System.out.println("SErverPort="+port);
+
+        FluxExchangeResult<String> result = webTestClient
+            .get()
+            .uri("/api/new-session")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .returnResult(String.class)
+        ;
+        assert result.getStatus().value() == 200;
+
+        String tag = result.getResponseBody().blockFirst();
+
+        WebSocketClient client = new ReactorNettyWebSocketClient();
+        client.execute(new URI("ws://127.0.0.1:" + port + "/ws"), session -> {
+            return Mono.empty();
+        }).block(Duration.ofMillis(10000));
     }
 
     @Test

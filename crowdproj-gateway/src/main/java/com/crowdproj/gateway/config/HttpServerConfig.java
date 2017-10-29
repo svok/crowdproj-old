@@ -19,6 +19,13 @@ import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 
+
+import org.springframework.web.reactive.socket.WebSocketHandler;
+import org.springframework.web.reactive.socket.server.WebSocketService;
+import org.springframework.web.reactive.socket.server.support.HandshakeWebSocketService;
+import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
+import org.springframework.web.reactive.socket.server.upgrade.ReactorNettyRequestUpgradeStrategy;
+
 import reactor.ipc.netty.http.server.HttpServer;
 
 import com.crowdproj.gateway.handlers.ApiHandler;
@@ -53,6 +60,7 @@ public class HttpServerConfig {
     }
 */
 
+/*
     @Bean
     public HttpServer httpServer(RouterFunction<?> mainRouterFunction) {
         HttpHandler httpHandler = RouterFunctions.toHttpHandler(mainRouterFunction);
@@ -62,6 +70,7 @@ public class HttpServerConfig {
         server.newHandler(adapter);
         return server;
     }
+*/
 
     @Bean
     ErrorHandler errorHandler() {
@@ -91,4 +100,51 @@ public class HttpServerConfig {
         return new WebSocketHandlerAdapter();
     }
 */
+
+/*
+    @Bean
+    public HandlerMapping handlerMapping() {
+
+        Map<String, WsHandler> map = new HashMap<>();
+        map.put("/websocket/echo", new WsHandler());
+
+        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
+        mapping.setUrlMap(map);
+        return mapping;
+    }
+*/
+
+    @Bean
+    public UnicastProcessor<Event> eventPublisher(){
+        return UnicastProcessor.create();
+    }
+
+    @Bean
+    public Flux<Event> events(UnicastProcessor<Event> eventPublisher) {
+        return eventPublisher
+                .replay(25)
+                .autoConnect();
+    }
+
+    @Bean
+    public HandlerMapping webSocketMapping(UnicastProcessor<Event> eventPublisher, Flux<Event> events) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("/ws", new WsHandler(eventPublisher, events));
+        SimpleUrlHandlerMapping simpleUrlHandlerMapping = new SimpleUrlHandlerMapping();
+        simpleUrlHandlerMapping.setUrlMap(map);
+
+        //Without the order things break :-/
+        simpleUrlHandlerMapping.setOrder(10);
+        return simpleUrlHandlerMapping;
+    }
+
+    @Bean
+    public WebSocketHandlerAdapter handlerAdapter() {
+        return new WebSocketHandlerAdapter(webSocketService());
+    }
+
+    @Bean
+    public WebSocketService webSocketService() {
+        return new HandshakeWebSocketService(new ReactorNettyRequestUpgradeStrategy());
+    }
 }
