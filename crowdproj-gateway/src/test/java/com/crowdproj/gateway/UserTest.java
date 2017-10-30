@@ -180,8 +180,6 @@ public class UserTest {
     @Test
     public void test05WebSocket() throws IOException, URISyntaxException {
 
-        System.out.println("SErverPort="+port);
-
         FluxExchangeResult<String> result = webTestClient
             .get()
             .uri("/api/new-session")

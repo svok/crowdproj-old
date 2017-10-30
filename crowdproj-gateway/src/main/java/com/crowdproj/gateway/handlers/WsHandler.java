@@ -35,9 +35,9 @@ public class WsHandler implements WebSocketHandler {
         System.out.println("############### WsHandler handler");
         WebSocketMessageSubscriber subscriber = new WebSocketMessageSubscriber(eventPublisher);
         session.receive()
-                .map(WebSocketMessage::getPayloadAsText)
-                .map(this::toEvent)
-                .subscribe(subscriber::onNext, subscriber::onError, subscriber::onComplete);
+            .map(WebSocketMessage::getPayloadAsText)
+            .map(this::toEvent)
+            .subscribe(subscriber::onNext, subscriber::onError, subscriber::onComplete);
         return session.send(outputEvents.map(session::textMessage));
     }
 
