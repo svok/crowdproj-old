@@ -10,8 +10,8 @@
 <body>
 <p>Hello World!</p>
 
-<script>
- var sock = new SockJS('http://localhost:8080/ws');
+<!--script>
+ var sock = new SockJS('http://localhost:9000/sockjs');
  sock.onopen = function() {
      console.log('open');
      sock.send('test');
@@ -25,6 +25,27 @@
  sock.onclose = function() {
      console.log('close');
  };
+</script-->
+
+<script>
+var sock = new WebSocket("ws://localhost:9000/ws", ["protocolOne", "protocolTwo"]);
+sock.onopen = function(event) {
+    console.log('open');
+    console.log(event);
+    var json = {
+        "test": "test"
+    };
+    sock.send(JSON.stringify(json));
+};
+
+sock.onmessage = function(event) {
+    console.log('message', event.data);
+//     sock.close();
+};
+
+sock.onclose = function() {
+     console.log('close');
+};
 </script>
 </body>
 

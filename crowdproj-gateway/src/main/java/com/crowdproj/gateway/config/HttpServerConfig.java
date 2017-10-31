@@ -16,15 +16,19 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.reactive.socket.WebSocketHandler;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
-
 
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.reactive.socket.server.support.HandshakeWebSocketService;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
 import org.springframework.web.reactive.socket.server.upgrade.ReactorNettyRequestUpgradeStrategy;
+import org.springframework.web.socket.sockjs.SockJsService;
+import org.springframework.web.socket.sockjs.support.SockJsHttpRequestHandler;
+import org.springframework.web.socket.sockjs.transport.handler.DefaultSockJsService;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import reactor.ipc.netty.http.server.HttpServer;
 
@@ -50,18 +54,6 @@ public class HttpServerConfig {
 
 /*
     @Bean
-    public HttpServer httpServer(RouterFunction<?> routerFunction) {
-        HttpHandler httpHandler = RouterFunctions.toHttpHandler(routerFunction);
-        ReactorHttpHandlerAdapter adapter = new ReactorHttpHandlerAdapter(httpHandler);
-        System.out.println("########### httpServer Bean");
-        HttpServer server = HttpServer.create(host, port);
-        server.newHandler(adapter);
-        return server;
-    }
-*/
-
-/*
-    @Bean
     public HttpServer httpServer(RouterFunction<?> mainRouterFunction) {
         HttpHandler httpHandler = RouterFunctions.toHttpHandler(mainRouterFunction);
         ReactorHttpHandlerAdapter adapter = new ReactorHttpHandlerAdapter(httpHandler);
@@ -82,38 +74,6 @@ public class HttpServerConfig {
         return MainRouter.doRoute(apiHandler, errorHandler);
     }
 
-/*
-    @Bean
-    public HandlerMapping webSocketMapping(UnicastProcessor<Event> eventPublisher, Flux<Event> events) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("/ws", new WsHandler(eventPublisher, events));
-        SimpleUrlHandlerMapping simpleUrlHandlerMapping = new SimpleUrlHandlerMapping();
-        simpleUrlHandlerMapping.setUrlMap(map);
-
-        //Without the order things break :-/
-        simpleUrlHandlerMapping.setOrder(10);
-        return simpleUrlHandlerMapping;
-    }
-
-    @Bean
-    public WebSocketHandlerAdapter handlerAdapter() {
-        return new WebSocketHandlerAdapter();
-    }
-*/
-
-/*
-    @Bean
-    public HandlerMapping handlerMapping() {
-
-        Map<String, WsHandler> map = new HashMap<>();
-        map.put("/websocket/echo", new WsHandler());
-
-        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-        mapping.setUrlMap(map);
-        return mapping;
-    }
-*/
-
     @Bean
     public UnicastProcessor<Event> eventPublisher(){
         return UnicastProcessor.create();
@@ -128,8 +88,13 @@ public class HttpServerConfig {
 
     @Bean
     public HandlerMapping webSocketMapping(UnicastProcessor<Event> eventPublisher, Flux<Event> events) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("/ws", new WsHandler(eventPublisher, events));
+
+        Map<String, WebSocketHandler> map = new HashMap<>();
+        WebSocketHandler wsHandler = new WsHandler(eventPublisher, events);
+
+        // Connect to WebSocket
+        map.put("/ws", wsHandler);
+
         SimpleUrlHandlerMapping simpleUrlHandlerMapping = new SimpleUrlHandlerMapping();
         simpleUrlHandlerMapping.setUrlMap(map);
 
@@ -137,6 +102,44 @@ public class HttpServerConfig {
         simpleUrlHandlerMapping.setOrder(10);
         return simpleUrlHandlerMapping;
     }
+
+/*
+    @Bean
+    public HandlerMapping webSocketMapping(UnicastProcessor<Event> eventPublisher, Flux<Event> events) {
+
+        Map<String, WebSocketHandler> map = new HashMap<>();
+        WebSocketHandler wsHandler = new WsHandler(eventPublisher, events);
+
+        // Connect to WebSocket
+        map.put("/ws", wsHandler);
+
+        // Connect to SockJS
+        //SockJsService sockJsService = new DefaultSockJsService(sockJsTaskScheduler());
+        SockJsService sockJsService = new DefaultSockJsService(new ThreadPoolTaskScheduler());
+
+                                                                        // reactive WebSocketHandler не поддерживается в этом месте
+        map.put("/sockjs/**", new SockJsHttpRequestHandler(sockJsService, wsHandler));
+
+        SimpleUrlHandlerMapping simpleUrlHandlerMapping = new SimpleUrlHandlerMapping();
+        simpleUrlHandlerMapping.setUrlMap(map);
+
+        //Without the order things break :-/
+        simpleUrlHandlerMapping.setOrder(10);
+        return simpleUrlHandlerMapping;
+    }
+
+    @Bean
+    public SimpleUrlHandlerMapping handlerMapping() {
+        Map<String, Object> urlMap = new HashMap<String, Object>();
+        urlMap.put("/sockjs/cobrowse/agent/**", new SockJsHttpRequestHandler(sockJsService,   coBrowseSockJsAgentHandler()));
+        urlMap.put("/sockjs/cobrowse/customer/**", new SockJsHttpRequestHandler(sockJsService, coBrowseSockJsCustomerHandler()));
+        urlMap.put("/sockjs/cobrowse/admin/**", new SockJsHttpRequestHandler(sockJsService, coBrowseSockJsAdminHandler()));
+        SimpleUrlHandlerMapping hm = new SimpleUrlHandlerMapping();
+        hm.setOrder(-1);
+        hm.setUrlMap(urlMap);
+        return hm;
+    }
+*/
 
     @Bean
     public WebSocketHandlerAdapter handlerAdapter() {
