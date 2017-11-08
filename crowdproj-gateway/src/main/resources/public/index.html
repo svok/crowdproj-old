@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Swagger UI</title>
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <!-- script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -33,7 +34,18 @@ sock.onopen = function(event) {
     console.log('open');
     console.log(event);
     var json = {
-        "test": "test"
+        "type": "testEvent",
+        "payload": {
+            "user": {
+                "id": "1234",
+                "email": "point@point.po"
+            },
+            "point": "one",
+            "manyPoints": [1,2,3],
+            "Object": {
+                "this":"is"
+            }
+        }
     };
     sock.send(JSON.stringify(json));
 };

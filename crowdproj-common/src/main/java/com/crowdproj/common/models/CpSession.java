@@ -16,40 +16,40 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 
-public class Session {
+public class CpSession {
 
-    public String sessionId;
-    public String userId;
-    public Date now;
-    public Date exp;
+    protected String sessionId;
+    protected String userId;
+    protected Date now;
+    protected Date exp;
 
     private static String base64SecretBytes;
 
 
-    public static Session createNew() {
-        Session session = new Session();
+    public static CpSession createNew() {
+        CpSession session = new CpSession();
         session.sessionId = UUID.randomUUID().toString();
         session.now = new Date();
         session.exp = new Date(System.currentTimeMillis() + (30000 * 3600 * 24)); // 30 seconds
         return session;
     }
 
-    public Session setIdentity(User user) {
+    public CpSession setIdentity(User user) {
         this.userId = user.getId();
         return this;
     }
 
-    public Session setSessionId(String sessionId) {
+    public CpSession setSessionId(String sessionId) {
         this.sessionId = sessionId;
         return this;
     }
 
-    public Session setUserId(String userId) {
+    public CpSession setUserId(String userId) {
         this.userId = userId;
         return this;
     }
 
-    public String generateToken() throws IOException {
+    public String getToken() throws IOException {
 
         String token = Jwts.builder()
             .setId(sessionId)
@@ -66,14 +66,14 @@ public class Session {
         return token;
     }
 
-    public static Session parseToken(String token) throws IOException {
+    public static CpSession parseToken(String token) throws IOException {
         Claims claims = Jwts.parser()
             .setSigningKey(getSecretString())
             .parseClaimsJws(token)
             .getBody()
         ;
 
-        Session session = new Session()
+        CpSession session = new CpSession()
             .setSessionId(claims.getId())
             .setUserId(claims.getSubject())
         ;

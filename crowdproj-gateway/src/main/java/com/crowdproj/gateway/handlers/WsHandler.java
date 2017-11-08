@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.crowdproj.common.models.Event;
-import static com.crowdproj.common.models.Event.Type.*;
+//import static com.crowdproj.common.models.Event.Type.*;
 
 //import static codes.monkey.reactivechat.Event.Type.USER_LEFT;
 
@@ -79,9 +79,9 @@ public class WsHandler implements WebSocketHandler {
         public void onComplete() {
 
             lastReceivedEvent.ifPresent(event -> eventPublisher.onNext(
-                    Event.type(USER_LEFT)
+                    Event.type("USER_LEFT")
                         .withPayload()
-                        .user(event.getUser())
+                        .setSession(event.getSession())
                         .build()
                 )
             );

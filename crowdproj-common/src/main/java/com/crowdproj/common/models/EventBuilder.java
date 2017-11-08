@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EventBuilder {
-    private Event.Type type;
+    private String type;
     private PayloadBuilder payloadBuilder = new PayloadBuilder();
 
-    public EventBuilder type(Event.Type type) {
+    public EventBuilder type(String type) {
         this.type = type;
         return this;
     }
@@ -22,11 +22,11 @@ public class EventBuilder {
 
     public class PayloadBuilder {
 
-        private String userId;
+        private CpSession session;
         private Map<String, Object> properties = new HashMap<>();
 
-        public PayloadBuilder userId(String userId) {
-            this.userId = userId;
+        public PayloadBuilder session(CpSession session) {
+            this.session = session;
             return this;
         }
 
@@ -42,8 +42,8 @@ public class EventBuilder {
         }
 */
 
-        public PayloadBuilder user(User user) {
-            this.userId = user.getId();
+        public PayloadBuilder setSession(CpSession session) {
+            this.session = session;
 //            this.avatar = user.getAvatar();
             return this;
         }
@@ -62,7 +62,7 @@ public class EventBuilder {
 
 
         public Event build() {
-            return buildEvent(new Payload(new User().setId(payloadBuilder.userId), properties));
+            return buildEvent(new Payload(payloadBuilder.session, properties));
         }
     }
 }

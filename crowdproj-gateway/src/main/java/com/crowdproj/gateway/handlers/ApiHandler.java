@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 import com.crowdproj.common.models.User;
 import com.crowdproj.common.models.Signin;
 import com.crowdproj.common.models.Signup;
-import com.crowdproj.common.models.Session;
+import com.crowdproj.common.models.CpSession;
 
 import com.crowdproj.gateway.repositories.UserRepository;
 
@@ -69,10 +69,10 @@ public class ApiHandler {
 
     public Mono<ServerResponse> getNewSession(ServerRequest request) {
 
-        Session session = Session.createNew();
+        CpSession session = CpSession.createNew();
 
         try {
-            String tag = session.generateToken();
+            String tag = session.getToken();
             return ServerResponse.ok().body(BodyInserters.fromObject(tag));
         } catch(IOException e) {
             System.out.println("Ошибка 500 в getNewSession");

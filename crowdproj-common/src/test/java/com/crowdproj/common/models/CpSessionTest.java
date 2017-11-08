@@ -7,13 +7,13 @@ import java.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.crowdproj.common.models.Session;
+import com.crowdproj.common.models.CpSession;
 
-public class SessionTest {
+public class CpSessionTest {
 
     @Test
     public void test() throws IOException {
-        Session session = Session.createNew();
+        CpSession session = CpSession.createNew();
 
         assert session.sessionId instanceof String;
         assert session.sessionId.length() > 10;

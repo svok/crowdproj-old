@@ -10,7 +10,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
+    options.encoding = 'UTF-8'
 }
 
 repositories {
@@ -19,6 +19,7 @@ repositories {
 
 dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.+'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.+'
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.+'
 
     testCompile 'junit:junit:4.12'
