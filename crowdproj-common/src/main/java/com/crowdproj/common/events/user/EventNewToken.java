@@ -3,16 +3,16 @@ package com.crowdproj.common.events.user;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import com.crowdproj.common.events.AbstractEventClient;
+import com.crowdproj.common.events.AbstractEventServer;
 import com.crowdproj.common.user.Signin;
 
-public class EventOpenSession extends AbstractEventClient {
+public class EventNewToken extends AbstractEventServer {
 
     protected String token;
 
     @JsonCreator
-//    public EventSignin(@JsonProperty("type") String type, @JsonProperty("signin") Signin signin) {
-    public EventOpenSession(@JsonProperty("token") String token) {
+    public EventNewToken(@JsonProperty("token") String token) {
+//        super("user.new-token");
         setToken(token);
     }
 

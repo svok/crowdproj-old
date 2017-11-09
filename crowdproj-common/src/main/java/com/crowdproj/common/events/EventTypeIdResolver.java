@@ -55,6 +55,14 @@ public class EventTypeIdResolver extends TypeIdResolverBase
         String name = clazz.getName();
         System.out.println("Получен объект класса "+name);
 
+        if(clazz.isAssignableFrom(EventClientDefault.class) || clazz.isAssignableFrom(EventServerDefault.class)) {
+            if(obj == null) {
+                throw new IllegalStateException("EventClientDefault and EventServerDefault must be instantiated");
+            } else {
+                return ((AbstractEvent)obj).getType();
+            }
+        }
+
         if (! name.startsWith(EVENT_PACKAGE) ) {
             throw new IllegalStateException("Class " + clazz + " is not in the package " + EVENT_PACKAGE);
         }
@@ -97,7 +105,14 @@ public class EventTypeIdResolver extends TypeIdResolverBase
             // clazz = ClassUtil.findClass(clazzName);
             clazz = Class.forName(clazzName);
         } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("Cannot find class '" + clazzName + "'");
+            Class<?> baseClass = mBaseType.getRawClass();
+            if(baseClass.isAssignableFrom(EventClientDefault.class)) {
+                clazz = EventClientDefault.class;
+            } else if(baseClass.isAssignableFrom(EventServerDefault.class)) {
+                clazz = EventServerDefault.class;
+            } else {
+                throw new IllegalStateException("Wrong superclass for Event: '" + clazzName + "'");
+            }
         }
         return TypeFactory.defaultInstance().constructSpecializedType(mBaseType, clazz);
     }

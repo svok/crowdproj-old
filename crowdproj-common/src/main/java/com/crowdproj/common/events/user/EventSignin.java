@@ -13,6 +13,7 @@ public class EventSignin extends AbstractEventClient {
     @JsonCreator
 //    public EventSignin(@JsonProperty("type") String type, @JsonProperty("signin") Signin signin) {
     public EventSignin(@JsonProperty("signin") Signin signin) {
+//        super("user.signin");
         setSignin(signin);
     }
 

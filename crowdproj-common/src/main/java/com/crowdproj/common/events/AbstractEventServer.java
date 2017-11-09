@@ -16,27 +16,21 @@ import java.util.concurrent.atomic.AtomicInteger;
     include = JsonTypeInfo.As.PROPERTY,
     property = "type")
 @JsonTypeIdResolver(EventTypeIdResolver.class)
-abstract public class AbstractEventServer {
+abstract public class AbstractEventServer extends AbstractEvent {
     private static AtomicInteger ID_GENERATOR = new AtomicInteger(0);
-
-    private String type;
 
     private final int id;
 
     private final long timestamp;
 
-//    @JsonCreator
-//    public Event(@JsonProperty("type") String type) {
-    public AbstractEventServer(String type) {
-        this.type = type;
+    @JsonCreator
+//    public AbstractEventServer(@JsonProperty("type") String type) {
+    public AbstractEventServer() {
+        setType(type);
         this.id = ID_GENERATOR.addAndGet(1);
         this.timestamp = System.currentTimeMillis();
     }
 
-
-    public String getType() {
-        return type;
-    }
 
     public int getId() {
         return id;

@@ -9,7 +9,9 @@ import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
 import com.crowdproj.common.events.user.EventSignin;
 import com.crowdproj.common.events.user.EventCredentials;
-import com.crowdproj.common.events.user.EventOpenSession;
+import com.crowdproj.common.events.user.EventNewToken;
+import com.crowdproj.common.events.EventClientDefault;
+import com.crowdproj.common.events.EventServerDefault;
 
 import com.crowdproj.common.user.Signin;
 import com.crowdproj.common.user.UserInfo;
@@ -24,7 +26,9 @@ public class EventsTest {
 
     protected static final String jsonSignin = "{\"type\":\"user.signin\",\"signin\":{\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
     protected static final String jsonCredentials = "{\"type\":\"user.credentials\",\"user\":{\"id\":\"123456-123456\",\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
-    protected static final String jsonOpenSession = "{\"type\":\"user.open-session\",\"token\":\"This is a client token\"}";
+    protected static final String jsonNewToken = "{\"type\":\"user.new-token\",\"token\":\"This is a client token\"}";
+    protected static final String jsonDefaultClient = "{\"type\":\"default.client\",\"default\":\"Some defaul\",\"client\":\"some client\"}";
+    protected static final String jsonDefaultServer = "{\"type\":\"default.server\",\"default\":\"Some defaul\",\"server\":\"some server\"}";
 
     @Test
     public void testJsonToSignin() throws IOException {
@@ -66,19 +70,37 @@ public class EventsTest {
     }
 
     @Test
-    public void testJsonToOpenSession() throws IOException {
-        AbstractEventClient event = mapper.readValue(jsonOpenSession, AbstractEventClient.class);
+    public void testJsonToNewToken() throws IOException {
+        AbstractEventServer event = mapper.readValue(jsonNewToken, AbstractEventServer.class);
 
-        assert event instanceof EventOpenSession;
+        assert event instanceof EventNewToken;
     }
 
     @Test
-    public void testOpenSessionToJson() throws IOException {
-        AbstractEventClient event = new EventOpenSession("This is very big token 0987098ullkhlkjhlkjhlkjhl");
+    public void testNewTokenToJson() throws IOException {
+        AbstractEventServer event = new EventNewToken("This is very big token 0987098ullkhlkjhlkjhlkjhl");
         String json = mapper.writeValueAsString(event);
 
-        System.out.println("EventOpenSession json conversion string: " + json);
-        assert json.contains("\"user.open-session\"");
+        System.out.println("EventNewToken json conversion string: " + json);
+        assert json.contains("\"user.new-token\"");
+    }
+
+    @Test
+    public void testJsonToDefaultClient() throws IOException {
+        AbstractEventClient event = mapper.readValue(jsonDefaultClient, AbstractEventClient.class);
+
+        assert event instanceof EventClientDefault;
+    }
+
+    @Test
+    public void testDefaultClientToJson() throws IOException {
+//        AbstractEventClient event = new EventClientDefault("default.client");
+        AbstractEventClient event = new EventClientDefault();
+        event.setType("default.client");
+        String json = mapper.writeValueAsString(event);
+
+        System.out.println("EventClientDefault json conversion string: " + json);
+        assert json.contains("\"default.client\"");
     }
 
 }

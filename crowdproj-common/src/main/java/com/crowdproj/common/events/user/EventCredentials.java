@@ -12,7 +12,7 @@ public class EventCredentials extends AbstractEventServer {
 
     @JsonCreator
     public EventCredentials(@JsonProperty("user") UserInfo user) {
-        super("user.credentials");
+//        super("user.credentials");
         setUser(user);
     }
 
