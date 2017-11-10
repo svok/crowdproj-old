@@ -14,14 +14,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CUSTOM,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "type")
+    property = "type",
+    visible = true
+)
 @JsonTypeIdResolver(EventTypeIdResolver.class)
 abstract public class AbstractEventClient extends AbstractEvent {
-
-    @JsonCreator
-//    public AbstractEventClient(@JsonProperty("type") String type) {
-    public AbstractEventClient() {
-        setType(type);
-    }
-
 }

@@ -12,7 +12,6 @@ public class EventRequestToken extends AbstractEventClient {
 
     @JsonCreator
     public EventRequestToken() {
-//        super("user.rquest");
     }
 
 }

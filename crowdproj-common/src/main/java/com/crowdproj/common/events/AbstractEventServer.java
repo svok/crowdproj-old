@@ -14,19 +14,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CUSTOM,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "type")
+    property = "type",
+    visible = true
+)
 @JsonTypeIdResolver(EventTypeIdResolver.class)
 abstract public class AbstractEventServer extends AbstractEvent {
     private static AtomicInteger ID_GENERATOR = new AtomicInteger(0);
 
-    private final int id;
+    private final Integer id;
 
-    private final long timestamp;
+    private final Long timestamp;
 
-    @JsonCreator
-//    public AbstractEventServer(@JsonProperty("type") String type) {
     public AbstractEventServer() {
-        setType(type);
         this.id = ID_GENERATOR.addAndGet(1);
         this.timestamp = System.currentTimeMillis();
     }
@@ -41,4 +40,10 @@ abstract public class AbstractEventServer extends AbstractEvent {
         return timestamp;
     }
 
+    public String toString() {
+        return super.toString()
+            + "    id=" + (id == null ? "null" : "\"" + id + "\"") + "\n"
+            + "    timestamp=" + (timestamp == null ? "null" : "\"" + Long.toString(timestamp) + "\"") + "\n"
+        ;
+    }
 }

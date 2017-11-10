@@ -24,4 +24,9 @@ public class EventCredentials extends AbstractEventServer {
         return user;
     }
 
+    public String toString() {
+        return super.toString()
+            + "    user" + (user == null ? "null" : "\"" + user.toString() + "\"") + "\n"
+        ;
+    }
 }

@@ -12,7 +12,6 @@ public class EventNewToken extends AbstractEventServer {
 
     @JsonCreator
     public EventNewToken(@JsonProperty("token") String token) {
-//        super("user.new-token");
         setToken(token);
     }
 
@@ -24,4 +23,9 @@ public class EventNewToken extends AbstractEventServer {
         return token;
     }
 
+    public String toString() {
+        return super.toString()
+            + "    token=" + (token == null ? "null" : "\"" + token + "\"") + "\n"
+        ;
+    }
 }

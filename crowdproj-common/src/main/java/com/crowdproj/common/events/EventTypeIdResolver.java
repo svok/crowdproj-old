@@ -40,6 +40,9 @@ public class EventTypeIdResolver extends TypeIdResolverBase
     @Override
     public String idFromValue(Object obj)
     {
+        String type = ((AbstractEvent)obj).getType();
+        if(type != null && type != "") return type;
+
         return idFromValueAndType(obj, obj.getClass());
     }
 
@@ -53,7 +56,7 @@ public class EventTypeIdResolver extends TypeIdResolverBase
     public String idFromValueAndType(Object obj, Class<?> clazz) throws IllegalStateException
     {
         String name = clazz.getName();
-        System.out.println("Получен объект класса "+name);
+//        System.out.println("idFromValueAndType: Получен объект класса "+name);
 
         if(clazz.isAssignableFrom(EventClientDefault.class) || clazz.isAssignableFrom(EventServerDefault.class)) {
             if(obj == null) {
@@ -68,7 +71,6 @@ public class EventTypeIdResolver extends TypeIdResolverBase
         }
 
         String suffix = name.substring(EVENT_PACKAGE.length() + 1);
-        System.out.println("Суфикс класса " + suffix);
         String parts[] = suffix.split("\\.");
 
         if(parts.length < 2) {
@@ -91,6 +93,7 @@ public class EventTypeIdResolver extends TypeIdResolverBase
     @Override
     public JavaType typeFromId(DatabindContext context, String type)
     {
+//        System.out.println("idFromValueAndType: Получен json-type " + type);
         Class<?> clazz;
         String parts[] = type.split("\\.");
         if(parts.length < 2) {
@@ -102,7 +105,6 @@ public class EventTypeIdResolver extends TypeIdResolverBase
         clazzName = clazzName + ".Event" + CaseConverter.typeToClass(parts[parts.length - 1]);
 
         try {
-            // clazz = ClassUtil.findClass(clazzName);
             clazz = Class.forName(clazzName);
         } catch (ClassNotFoundException e) {
             Class<?> baseClass = mBaseType.getRawClass();
@@ -114,7 +116,8 @@ public class EventTypeIdResolver extends TypeIdResolverBase
                 throw new IllegalStateException("Wrong superclass for Event: '" + clazzName + "'");
             }
         }
-        return TypeFactory.defaultInstance().constructSpecializedType(mBaseType, clazz);
+//        return TypeFactory.defaultInstance().constructSpecializedType(mBaseType, clazz);
+        return context.constructSpecializedType(mBaseType, clazz);
     }
 
     @Override

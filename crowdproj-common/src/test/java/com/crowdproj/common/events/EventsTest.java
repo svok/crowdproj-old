@@ -27,22 +27,23 @@ public class EventsTest {
     protected static final String jsonSignin = "{\"type\":\"user.signin\",\"signin\":{\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
     protected static final String jsonCredentials = "{\"type\":\"user.credentials\",\"user\":{\"id\":\"123456-123456\",\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
     protected static final String jsonNewToken = "{\"type\":\"user.new-token\",\"token\":\"This is a client token\"}";
-    protected static final String jsonDefaultClient = "{\"type\":\"default.client\",\"default\":\"Some defaul\",\"client\":\"some client\"}";
-    protected static final String jsonDefaultServer = "{\"type\":\"default.server\",\"default\":\"Some defaul\",\"server\":\"some server\"}";
+    protected static final String jsonDefaultClient = "{\"type\":\"default.client\",\"default\":\"Some default\",\"client\":\"some client\"}";
+    protected static final String jsonDefaultServer = "{\"type\":\"default.server\",\"default\":\"Some default\",\"server\":\"some server\"}";
 
     @Test
     public void testJsonToSignin() throws IOException {
         AbstractEventClient event = mapper.readValue(jsonSignin, AbstractEventClient.class);
 
+        System.out.println("EventSignin class: " + event.toString());
         assert event instanceof EventSignin;
-        System.out.println("Signin from json: " + ((EventSignin)event).getSignin().toString());
-        System.out.println("Signin from json: " + ((EventSignin)event).getSignin().getEmail());
+        assert event.getType().equals("user.signin");
         assert ((EventSignin)event).getSignin().getEmail().equals("one@two.tree");
     }
 
     @Test
     public void testSigninToJson() throws IOException {
         AbstractEventClient event = new EventSignin((new Signin()).setEmail("one@two.three").setPassword("Secret"));
+        event.setType("user.signin");
         String json = mapper.writeValueAsString(event);
 
         System.out.println("EventSignin json conversion string: " + json);
@@ -53,7 +54,9 @@ public class EventsTest {
     public void testJsonToCredentials() throws IOException {
         AbstractEventServer event = mapper.readValue(jsonCredentials, AbstractEventServer.class);
 
+        System.out.println("EventCredentials class: " + event.toString());
         assert event instanceof EventCredentials;
+        assert event.getType().equals("user.credentials");
     }
 
     @Test
@@ -73,7 +76,9 @@ public class EventsTest {
     public void testJsonToNewToken() throws IOException {
         AbstractEventServer event = mapper.readValue(jsonNewToken, AbstractEventServer.class);
 
+        System.out.println("EventNewToken class: " + event.toString());
         assert event instanceof EventNewToken;
+        assert event.getType().equals("user.new-token");
     }
 
     @Test
@@ -89,18 +94,38 @@ public class EventsTest {
     public void testJsonToDefaultClient() throws IOException {
         AbstractEventClient event = mapper.readValue(jsonDefaultClient, AbstractEventClient.class);
 
+        System.out.println("EventClientDefault class: " + event.toString());
         assert event instanceof EventClientDefault;
+        assert event.getType().equals("default.client");
+        assert ((EventClientDefault)event).getProperties().get("client").equals("some client");
     }
 
     @Test
     public void testDefaultClientToJson() throws IOException {
-//        AbstractEventClient event = new EventClientDefault("default.client");
-        AbstractEventClient event = new EventClientDefault();
-        event.setType("default.client");
+        AbstractEventClient event = new EventClientDefault("default.client");
         String json = mapper.writeValueAsString(event);
 
         System.out.println("EventClientDefault json conversion string: " + json);
         assert json.contains("\"default.client\"");
+    }
+
+    @Test
+    public void testJsonToDefaultServer() throws IOException {
+        AbstractEventServer event = mapper.readValue(jsonDefaultServer, AbstractEventServer.class);
+
+        System.out.println("EventServerDefault class: " + event.toString());
+        assert event instanceof EventServerDefault;
+        assert event.getType().equals("default.server");
+        assert ((EventServerDefault)event).getProperties().get("server").equals("some server");
+    }
+
+    @Test
+    public void testDefaultServerToJson() throws IOException {
+        AbstractEventServer event = new EventServerDefault("default.server");
+        String json = mapper.writeValueAsString(event);
+
+        System.out.println("EventServerDefault json conversion string: " + json);
+        assert json.contains("\"default.server\"");
     }
 
 }

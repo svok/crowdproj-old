@@ -11,9 +11,7 @@ public class EventSignin extends AbstractEventClient {
     protected Signin signin;
 
     @JsonCreator
-//    public EventSignin(@JsonProperty("type") String type, @JsonProperty("signin") Signin signin) {
     public EventSignin(@JsonProperty("signin") Signin signin) {
-//        super("user.signin");
         setSignin(signin);
     }
 
@@ -23,6 +21,12 @@ public class EventSignin extends AbstractEventClient {
 
     public Signin getSignin() {
         return signin;
+    }
+
+    public String toString() {
+        return super.toString()
+            + "    signin=" + (signin == null ? "null" : "\"" + signin.toString() + "\"") + "\n"
+        ;
     }
 
 }
