@@ -9,7 +9,7 @@ import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
 import com.crowdproj.common.events.user.EventSignin;
 import com.crowdproj.common.events.user.EventCredentials;
-import com.crowdproj.common.events.user.EventNewToken;
+import com.crowdproj.common.events.session.EventNewToken;
 import com.crowdproj.common.events.EventClientDefault;
 import com.crowdproj.common.events.EventServerDefault;
 
@@ -26,7 +26,7 @@ public class EventsTest {
 
     protected static final String jsonSignin = "{\"type\":\"user.signin\",\"signin\":{\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
     protected static final String jsonCredentials = "{\"type\":\"user.credentials\",\"user\":{\"id\":\"123456-123456\",\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
-    protected static final String jsonNewToken = "{\"type\":\"user.new-token\",\"token\":\"This is a client token\"}";
+    protected static final String jsonNewToken = "{\"type\":\"session.new-token\",\"token\":\"This is a client token\"}";
     protected static final String jsonDefaultClient = "{\"type\":\"default.client\",\"default\":\"Some default\",\"client\":\"some client\"}";
     protected static final String jsonDefaultServer = "{\"type\":\"default.server\",\"default\":\"Some default\",\"server\":\"some server\"}";
 
@@ -78,7 +78,7 @@ public class EventsTest {
 
         System.out.println("EventNewToken class: " + event.toString());
         assert event instanceof EventNewToken;
-        assert event.getType().equals("user.new-token");
+        assert event.getType().equals("session.new-token");
     }
 
     @Test
@@ -87,7 +87,7 @@ public class EventsTest {
         String json = mapper.writeValueAsString(event);
 
         System.out.println("EventNewToken json conversion string: " + json);
-        assert json.contains("\"user.new-token\"");
+        assert json.contains("\"session.new-token\"");
     }
 
     @Test

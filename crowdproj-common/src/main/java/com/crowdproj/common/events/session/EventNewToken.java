@@ -1,4 +1,4 @@
-package com.crowdproj.common.events.user;
+package com.crowdproj.common.events.session;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

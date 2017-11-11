@@ -12,45 +12,52 @@ import reactor.core.publisher.UnicastProcessor;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.crowdproj.common.models.Event;
-//import static com.crowdproj.common.models.Event.Type.*;
+import com.crowdproj.gateway.brokers.WebSocketMessageBroker;
 
-//import static codes.monkey.reactivechat.Event.Type.USER_LEFT;
+import com.crowdproj.common.events.AbstractEventClient;
+import com.crowdproj.common.events.AbstractEventServer;
+//import com.crowdproj.common.events.session.EventSessionOpened;
+//import com.crowdproj.common.events.session.EventSessionClosed;
 
 public class WsHandler implements WebSocketHandler {
 
-    private UnicastProcessor<Event> eventPublisher;
+    private UnicastProcessor<AbstractEventServer> eventPublisher;
     private Flux<String> outputEvents;
     private ObjectMapper mapper;
 
-    public WsHandler(UnicastProcessor<Event> eventPublisher, Flux<Event> events) {
+    public WsHandler(UnicastProcessor<AbstractEventServer> eventPublisher, Flux<AbstractEventServer> events) {
         this.eventPublisher = eventPublisher;
         this.mapper = new ObjectMapper();
-        this.outputEvents = Flux.from(events).map(this::toJSON);
+        this.outputEvents = Flux.from(events).map(this::serverEventToJson);
         System.out.println("############### WsHandler constructor");
     }
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
         System.out.println("############### WsHandler handler");
-        WebSocketMessageSubscriber subscriber = new WebSocketMessageSubscriber(eventPublisher);
+        WebSocketMessageBroker subscriber = new WebSocketMessageBroker(eventPublisher);
         session.receive()
             .map(WebSocketMessage::getPayloadAsText)
-            .map(this::toEvent)
-            .subscribe(subscriber::onNext, subscriber::onError, subscriber::onComplete);
+            .map(mess -> {
+                System.out.println("WSH: message received: " + mess);
+                return mess;
+            })
+            .map(this::jsonToClientEvent)
+            .subscribe(subscriber::onSessionNext, subscriber::onSessionError, subscriber::onSessionComplete);
+        subscriber.onSessionOpen();
         return session.send(outputEvents.map(session::textMessage));
     }
 
 
-    private Event toEvent(String json) {
+    private AbstractEventClient jsonToClientEvent(String json) {
         try {
-            return mapper.readValue(json, Event.class);
+            return mapper.readValue(json, AbstractEventClient.class);
         } catch (IOException e) {
             throw new RuntimeException("Invalid JSON:" + json, e);
         }
     }
 
-    private String toJSON(Event event) {
+    private String serverEventToJson(AbstractEventServer event) {
         try {
             return mapper.writeValueAsString(event);
         } catch (JsonProcessingException e) {
@@ -58,34 +65,4 @@ public class WsHandler implements WebSocketHandler {
         }
     }
 
-    private static class WebSocketMessageSubscriber {
-        private UnicastProcessor<Event> eventPublisher;
-        private Optional<Event> lastReceivedEvent = Optional.empty();
-
-        public WebSocketMessageSubscriber(UnicastProcessor<Event> eventPublisher) {
-            this.eventPublisher = eventPublisher;
-        }
-
-        public void onNext(Event event) {
-            lastReceivedEvent = Optional.of(event);
-            eventPublisher.onNext(event);
-        }
-
-        public void onError(Throwable error) {
-            //TODO log error
-            error.printStackTrace();
-        }
-
-        public void onComplete() {
-
-            lastReceivedEvent.ifPresent(event -> eventPublisher.onNext(
-                    Event.type("USER_LEFT")
-                        .withPayload()
-                        .setSession(event.getSession())
-                        .build()
-                )
-            );
-        }
-
-    }
 }

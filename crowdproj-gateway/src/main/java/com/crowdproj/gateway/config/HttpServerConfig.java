@@ -37,7 +37,8 @@ import com.crowdproj.gateway.handlers.WsHandler;
 import com.crowdproj.gateway.handlers.ErrorHandler;
 import com.crowdproj.gateway.routers.MainRouter;
 
-import com.crowdproj.common.models.Event;
+import com.crowdproj.common.events.AbstractEventClient;
+import com.crowdproj.common.events.AbstractEventServer;
 
 @Configuration
 @EnableWebFlux
@@ -75,19 +76,20 @@ public class HttpServerConfig {
     }
 
     @Bean
-    public UnicastProcessor<Event> eventPublisher(){
+    public UnicastProcessor<AbstractEventServer> eventPublisher(){
         return UnicastProcessor.create();
     }
 
     @Bean
-    public Flux<Event> events(UnicastProcessor<Event> eventPublisher) {
+    public Flux<AbstractEventServer> events(UnicastProcessor<AbstractEventServer> eventPublisher) {
         return eventPublisher
-                .replay(25)
-                .autoConnect();
+            .replay(25)
+            .autoConnect()
+        ;
     }
 
     @Bean
-    public HandlerMapping webSocketMapping(UnicastProcessor<Event> eventPublisher, Flux<Event> events) {
+    public HandlerMapping webSocketMapping(UnicastProcessor<AbstractEventServer> eventPublisher, Flux<AbstractEventServer> events) {
 
         Map<String, WebSocketHandler> map = new HashMap<>();
         WebSocketHandler wsHandler = new WsHandler(eventPublisher, events);

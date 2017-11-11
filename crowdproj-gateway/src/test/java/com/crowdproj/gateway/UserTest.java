@@ -2,6 +2,7 @@ package com.crowdproj.gateway;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Arrays;
 import java.time.Duration;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,12 +26,19 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import org.springframework.web.reactive.socket.client.WebSocketClient;
+import org.springframework.web.reactive.socket.WebSocketMessage;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import com.crowdproj.common.models.User;
 import com.crowdproj.common.models.Signin;
 import com.crowdproj.common.models.Signup;
+
+import com.crowdproj.common.events.session.EventSessionOpened;
+import com.crowdproj.common.events.session.EventSessionClosed;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -180,6 +188,8 @@ public class UserTest {
     @Test
     public void test05WebSocket() throws IOException, URISyntaxException {
 
+        ObjectMapper mapper = new ObjectMapper();
+
         FluxExchangeResult<String> result = webTestClient
             .get()
             .uri("/api/new-session")
@@ -192,9 +202,74 @@ public class UserTest {
         String tag = result.getResponseBody().blockFirst();
 
         WebSocketClient client = new ReactorNettyWebSocketClient();
+        System.out.println("Test: connecting to WS");
         client.execute(new URI("ws://127.0.0.1:" + port + "/ws"), session -> {
+            final String sessionId = session.getId();
+            if(true) {  // add session id to set to keep a count of active sessions
+                System.out.println("Starting WebSocket Session [{" + sessionId + "}]");
+                // Send the session id back to the client
+                EventSessionOpened event = new EventSessionOpened();
+                String message;
+                try {
+                    System.out.println("Test: try");
+                    message = mapper.writeValueAsString(event);
+                    System.out.println("Test: sending message to server: " + message);
+                } catch(Exception e) {
+                    System.err.println(e);
+                    message = "";
+                }
+
+                WebSocketMessage msg = session.textMessage(message);
+                // Register the outbound flux as the source of outbound messages
+/*
+                final Flux<WebSocketMessage> outFlux = Flux.concat(Flux.just(msg), newMetricFlux.map(metric -> {
+                    System.out.println("Sending message to client [{" + sessionId + "}]: {" + metric + "}");
+                    return session.textMessage(metric);
+                }));
+*/
+                final Flux<WebSocketMessage> outFlux = Flux.just(msg);
+                // Subscribe to the inbound message flux
+                session.receive().doFinally(sig -> {
+                    System.out.println("Terminating WebSocket Session (client side) sig: [{" + sig.name() + "}], [{" + sessionId + "}]");
+                    session.close();
+//                    sessions.remove(sessionId);  // remove the stored session id
+                }).subscribe(inMsg -> {
+                    System.out.println("Received inbound message from client [{" + sessionId + "}]: {" + inMsg.getPayloadAsText() + "}");
+                });
+                return session.send(outFlux);
+            }
             return Mono.empty();
-        }).block(Duration.ofMillis(10000));
+/*
+
+
+            System.out.println("Test: WS is connected");
+
+            Mono<Void> res = session.receive()
+                .map(WebSocketMessage::getPayloadAsText)
+                .map(mess -> {
+                    System.out.println("Test: message received: " + mess);
+                    return Mono.empty();
+            }).then();
+
+            System.out.println("Test: receiver initialized");
+
+            EventSessionOpened event = new EventSessionOpened();
+
+            System.out.println("Test: response event created");
+
+            try {
+                System.out.println("Test: try");
+                String message = mapper.writeValueAsString(event);
+                System.out.println("Test: sending message to server: " + message);
+                session.send(Mono.just(message).map(session::textMessage));
+                System.out.println("Test: message sent");
+            } catch(Exception e) {
+                System.err.println(e);
+            }
+
+            return res;
+*/
+        }).block(Duration.ofMillis(20000));
     }
 
     @Test
