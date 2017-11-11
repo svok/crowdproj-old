@@ -45,7 +45,10 @@ public class WsHandler implements WebSocketHandler {
             .map(this::jsonToClientEvent)
             .subscribe(subscriber::onSessionNext, subscriber::onSessionError, subscriber::onSessionComplete);
         subscriber.onSessionOpen();
-        return session.send(outputEvents.map(session::textMessage));
+        return session.send(outputEvents.map(mess -> {
+                System.out.println("WSH: message responsed: " + mess);
+                return mess;
+        }).map(session::textMessage));
     }
 
 

@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.ReplayProcessor;
 
 import com.crowdproj.common.models.User;
 import com.crowdproj.common.models.Signin;
@@ -190,86 +191,37 @@ public class UserTest {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        FluxExchangeResult<String> result = webTestClient
-            .get()
-            .uri("/api/new-session")
-            .accept(MediaType.APPLICATION_JSON)
-            .exchange()
-            .returnResult(String.class)
-        ;
-        assert result.getStatus().value() == 200;
+        EventSessionOpened event = new EventSessionOpened();
+        String message;
+        try {
+            System.out.println("Test: try");
+            message = mapper.writeValueAsString(event);
+            System.out.println("Test: sending message to server: " + message);
+        } catch(Exception e) {
+            System.err.println(e);
+            message = "";
+        }
 
-        String tag = result.getResponseBody().blockFirst();
+        Flux<String> input = Flux.fromArray(new String[] {
+            message,
+        });
+
+        int count = 100;
+        ReplayProcessor<Object> output = ReplayProcessor.create(count);
 
         WebSocketClient client = new ReactorNettyWebSocketClient();
-        System.out.println("Test: connecting to WS");
         client.execute(new URI("ws://127.0.0.1:" + port + "/ws"), session -> {
-            final String sessionId = session.getId();
-            if(true) {  // add session id to set to keep a count of active sessions
-                System.out.println("Starting WebSocket Session [{" + sessionId + "}]");
-                // Send the session id back to the client
-                EventSessionOpened event = new EventSessionOpened();
-                String message;
-                try {
-                    System.out.println("Test: try");
-                    message = mapper.writeValueAsString(event);
-                    System.out.println("Test: sending message to server: " + message);
-                } catch(Exception e) {
-                    System.err.println(e);
-                    message = "";
-                }
-
-                WebSocketMessage msg = session.textMessage(message);
-                // Register the outbound flux as the source of outbound messages
-/*
-                final Flux<WebSocketMessage> outFlux = Flux.concat(Flux.just(msg), newMetricFlux.map(metric -> {
-                    System.out.println("Sending message to client [{" + sessionId + "}]: {" + metric + "}");
-                    return session.textMessage(metric);
-                }));
-*/
-                final Flux<WebSocketMessage> outFlux = Flux.just(msg);
-                // Subscribe to the inbound message flux
-                session.receive().doFinally(sig -> {
-                    System.out.println("Terminating WebSocket Session (client side) sig: [{" + sig.name() + "}], [{" + sessionId + "}]");
-                    session.close();
-//                    sessions.remove(sessionId);  // remove the stored session id
-                }).subscribe(inMsg -> {
-                    System.out.println("Received inbound message from client [{" + sessionId + "}]: {" + inMsg.getPayloadAsText() + "}");
-                });
-                return session.send(outFlux);
-            }
-            return Mono.empty();
-/*
-
-
-            System.out.println("Test: WS is connected");
-
-            Mono<Void> res = session.receive()
-                .map(WebSocketMessage::getPayloadAsText)
-                .map(mess -> {
-                    System.out.println("Test: message received: " + mess);
-                    return Mono.empty();
-            }).then();
-
-            System.out.println("Test: receiver initialized");
-
-            EventSessionOpened event = new EventSessionOpened();
-
-            System.out.println("Test: response event created");
-
-            try {
-                System.out.println("Test: try");
-                String message = mapper.writeValueAsString(event);
-                System.out.println("Test: sending message to server: " + message);
-                session.send(Mono.just(message).map(session::textMessage));
-                System.out.println("Test: message sent");
-            } catch(Exception e) {
-                System.err.println(e);
-            }
-
-            return res;
-*/
-        }).block(Duration.ofMillis(20000));
+            System.out.println("Test: Starting to send messages");
+            return session
+                .send(input.doOnNext(s -> System.out.println("Test: outbound " + s)).map(session::textMessage))
+                .thenMany(session.receive().take(count).map(WebSocketMessage::getPayloadAsText))
+                .subscribeWith(output)
+                .doOnNext(s -> System.out.println("Test: inbound " + s))
+                .then()
+                .doOnSuccessOrError((aVoid, ex) ->
+                    System.out.println("Test: Done with " + (ex != null ? ex.getMessage() : "success")));
+        })
+        .block(Duration.ofMillis(5000));
     }
 
     @Test
