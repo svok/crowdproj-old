@@ -6,7 +6,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import com.crowdproj.gateway.exceptions.PathNotFoundException;
+import com.crowdproj.common.exceptions.PathNotFoundException;
 import com.crowdproj.common.models.ErrorResponse;
 
 public class ErrorHandler {

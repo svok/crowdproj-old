@@ -1,11 +1,10 @@
-package com.crowdproj.common.events;
+package com.crowdproj.common.events.system;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +12,15 @@ import java.util.Optional;
 
 import java.util.stream.Collectors;
 
-public class EventClientDefault extends AbstractEventClient {
+import com.crowdproj.common.events.AbstractEventClient;
+import com.crowdproj.common.events.AbstractEventServer;
+
+public class EventServerDefault extends AbstractEventServer {
 
     protected Map<String, Object> properties = new HashMap<>();
 
 //*
-//    @JsonCreator
-    public EventClientDefault(@JsonProperty("type") String type) {
+    public EventServerDefault(@JsonProperty("type") String type) {
         super();
         setType(type);
     }
@@ -49,4 +50,5 @@ public class EventClientDefault extends AbstractEventClient {
             .collect(Collectors.joining(""))
         ;
     }
+
 }

@@ -1,4 +1,4 @@
-package com.crowdproj.gateway.exceptions;
+package com.crowdproj.common.exceptions;
 
 public class InvalidParametersException extends Exception {
 

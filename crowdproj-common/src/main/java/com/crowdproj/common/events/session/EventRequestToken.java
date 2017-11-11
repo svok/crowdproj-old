@@ -7,11 +7,4 @@ import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.user.Signin;
 
 public class EventRequestToken extends AbstractEventClient {
-
-    protected String token;
-
-    @JsonCreator
-    public EventRequestToken() {
-    }
-
 }

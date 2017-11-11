@@ -10,8 +10,8 @@ import com.crowdproj.common.events.AbstractEventServer;
 import com.crowdproj.common.events.user.EventSignin;
 import com.crowdproj.common.events.user.EventCredentials;
 import com.crowdproj.common.events.session.EventNewToken;
-import com.crowdproj.common.events.EventClientDefault;
-import com.crowdproj.common.events.EventServerDefault;
+import com.crowdproj.common.events.system.EventClientDefault;
+import com.crowdproj.common.events.system.EventServerDefault;
 
 import com.crowdproj.common.user.Signin;
 import com.crowdproj.common.user.UserInfo;
@@ -37,6 +37,7 @@ public class EventsTest {
         System.out.println("EventSignin class: " + event.toString());
         assert event instanceof EventSignin;
         assert event.getType().equals("user.signin");
+        assert event.getRoute().equals("user");
         assert ((EventSignin)event).getSignin().getEmail().equals("one@two.tree");
     }
 
@@ -78,6 +79,7 @@ public class EventsTest {
 
         System.out.println("EventNewToken class: " + event.toString());
         assert event instanceof EventNewToken;
+        assert event.getRoute().equals("session");
         assert event.getType().equals("session.new-token");
     }
 

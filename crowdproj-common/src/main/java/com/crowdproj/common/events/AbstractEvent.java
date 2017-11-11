@@ -18,6 +18,13 @@ abstract public class AbstractEvent {
         return type_id;
     }
 
+    public String getRoute() {
+        if(type_id == null) return null;
+
+        int pos = type_id.lastIndexOf(".");
+        return type_id.substring(0, pos > 0 ? pos : 0);
+    }
+
     public String toString() {
         return getClass().getName() + ": \n"
             + "    type=" + (type_id == null ? "null" : "\""+type_id+"\"") + "\n"

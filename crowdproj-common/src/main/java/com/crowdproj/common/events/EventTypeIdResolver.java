@@ -15,7 +15,8 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import java.lang.IllegalStateException;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import com.crowdproj.common.events.system.EventClientDefault;
+import com.crowdproj.common.events.system.EventServerDefault;
 
 /**
  * Класс для определения ява-класса по полю type JSON-строки

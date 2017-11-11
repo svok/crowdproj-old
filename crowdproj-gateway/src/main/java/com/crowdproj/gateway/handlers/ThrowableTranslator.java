@@ -3,10 +3,10 @@ package com.crowdproj.gateway.handlers;
 import org.springframework.http.HttpStatus;
 import reactor.core.publisher.Mono;
 
-//import com.crowdproj.gateway.exceptions.GetGeoLocationException;
-import com.crowdproj.gateway.exceptions.InvalidParametersException;
-//import com.crowdproj.gateway.exceptions.GeoLocationNotFoundException;
-import com.crowdproj.gateway.exceptions.PathNotFoundException;
+//import com.crowdproj.common.exceptions.GetGeoLocationException;
+import com.crowdproj.common.exceptions.InvalidParametersException;
+//import com.crowdproj.common.exceptions.GeoLocationNotFoundException;
+import com.crowdproj.common.exceptions.PathNotFoundException;
 
 class ThrowableTranslator {
 
