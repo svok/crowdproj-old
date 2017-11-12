@@ -12,6 +12,7 @@ import com.crowdproj.common.events.user.EventCredentials;
 import com.crowdproj.common.events.session.EventNewToken;
 import com.crowdproj.common.events.system.EventClientDefault;
 import com.crowdproj.common.events.system.EventServerDefault;
+import com.crowdproj.common.events.system.EventError;
 
 import com.crowdproj.common.user.Signin;
 import com.crowdproj.common.user.UserInfo;
@@ -29,6 +30,7 @@ public class EventsTest {
     protected static final String jsonNewToken = "{\"type\":\"session.new-token\",\"token\":\"This is a client token\"}";
     protected static final String jsonDefaultClient = "{\"type\":\"default.client\",\"default\":\"Some default\",\"client\":\"some client\"}";
     protected static final String jsonDefaultServer = "{\"type\":\"default.server\",\"default\":\"Some default\",\"server\":\"some server\"}";
+    protected static final String jsonError = "{\"type\":\"system.error\",\"error\":\"Some error\"}";
 
     @Test
     public void testJsonToSignin() throws IOException {
@@ -128,6 +130,25 @@ public class EventsTest {
 
         System.out.println("EventServerDefault json conversion string: " + json);
         assert json.contains("\"default.server\"");
+    }
+
+    @Test
+    public void testJsonToError() throws IOException {
+        AbstractEventServer event = mapper.readValue(jsonError, AbstractEventServer.class);
+
+        System.out.println("EventError class: " + event.toString());
+        assert event instanceof EventError;
+        assert event.getType().equals("system.error");
+        assert ((EventError)event).getError().equals("Some error");
+    }
+
+    @Test
+    public void testErrorToJson() throws IOException {
+        AbstractEventServer event = new EventError("Some error");
+        String json = mapper.writeValueAsString(event);
+
+        System.out.println("EventError json conversion string: " + json);
+        assert json.contains("\"system.error\"");
     }
 
 }

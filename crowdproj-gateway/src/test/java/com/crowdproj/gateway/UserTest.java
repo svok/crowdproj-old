@@ -206,7 +206,7 @@ public class UserTest {
             message,
         });
 
-        int count = 100;
+        int count = 1;
         ReplayProcessor<Object> output = ReplayProcessor.create(count);
 
         WebSocketClient client = new ReactorNettyWebSocketClient();
