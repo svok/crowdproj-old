@@ -83,8 +83,8 @@ public class HttpServerConfig {
     @Bean
     public Flux<AbstractEventServer> events(UnicastProcessor<AbstractEventServer> eventPublisher) {
         return eventPublisher
-            .replay(25)
-            .autoConnect()
+//            .replay(25)
+//            .autoConnect()
         ;
     }
 

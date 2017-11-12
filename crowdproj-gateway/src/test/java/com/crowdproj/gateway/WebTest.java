@@ -24,9 +24,6 @@ import org.springframework.test.web.reactive.server.FluxExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
-import org.springframework.web.reactive.socket.client.WebSocketClient;
-import org.springframework.web.reactive.socket.WebSocketMessage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,7 +41,7 @@ import com.crowdproj.common.events.session.EventSessionClosed;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class UserTest {
+public class WebTest {
 
     @LocalServerPort
     private String port;
@@ -184,44 +181,6 @@ public class UserTest {
 
         String tag = result.getResponseBody().blockFirst();
         assert tag.length() > 10;
-    }
-
-    @Test
-    public void test05WebSocket() throws IOException, URISyntaxException {
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        EventSessionOpened event = new EventSessionOpened();
-        String message;
-        try {
-            System.out.println("Test: try");
-            message = mapper.writeValueAsString(event);
-            System.out.println("Test: sending message to server: " + message);
-        } catch(Exception e) {
-            System.err.println(e);
-            message = "";
-        }
-
-        Flux<String> input = Flux.fromArray(new String[] {
-            message,
-        });
-
-        int count = 1;
-        ReplayProcessor<Object> output = ReplayProcessor.create(count);
-
-        WebSocketClient client = new ReactorNettyWebSocketClient();
-        client.execute(new URI("ws://127.0.0.1:" + port + "/ws"), session -> {
-            System.out.println("Test: Starting to send messages");
-            return session
-                .send(input.doOnNext(s -> System.out.println("Test: outbound " + s)).map(session::textMessage))
-                .thenMany(session.receive().take(count).map(WebSocketMessage::getPayloadAsText))
-                .subscribeWith(output)
-                .doOnNext(s -> System.out.println("Test: inbound " + s))
-                .then()
-                .doOnSuccessOrError((aVoid, ex) ->
-                    System.out.println("Test: Done with " + (ex != null ? ex.getMessage() : "success")));
-        })
-        .block(Duration.ofMillis(5000));
     }
 
     @Test
