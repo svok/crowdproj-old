@@ -16,16 +16,10 @@ import com.crowdproj.gateway.brokers.WebSocketMessageBroker;
 
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
-//import com.crowdproj.common.events.session.EventSessionOpened;
-//import com.crowdproj.common.events.session.EventSessionClosed;
 
 public class WsHandler implements WebSocketHandler {
 
     private static final ObjectMapper mapper = new ObjectMapper();
-
-    public WsHandler() {
-        System.out.println("############### WsHandler constructor");
-    }
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
@@ -36,6 +30,8 @@ public class WsHandler implements WebSocketHandler {
         Flux<String> sessionOutputEvents = Flux.from(sessionEventPublisher).map(this::serverEventToJson);
 
         WebSocketMessageBroker subscriber = new WebSocketMessageBroker(sessionEventPublisher, session);
+
+        // Входящий поток
         session.receive()
             .map(WebSocketMessage::getPayloadAsText)
             .map(mess -> {
@@ -47,8 +43,8 @@ public class WsHandler implements WebSocketHandler {
         subscriber.onSessionOpen();
 
         return session.send(sessionOutputEvents.map(mess -> {
-                System.out.println("WSH: message responsed: " + mess);
-                return mess;
+            System.out.println("WSH: message responsed: " + mess);
+            return mess;
         }).map(session::textMessage));
     }
 
