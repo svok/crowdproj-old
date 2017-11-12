@@ -45,6 +45,9 @@ import com.crowdproj.common.models.Signup;
 
 import com.crowdproj.common.events.session.EventSessionOpened;
 import com.crowdproj.common.events.session.EventSessionClosed;
+import com.crowdproj.common.events.session.EventRequestToken;
+import com.crowdproj.common.events.session.EventRegisterToken;
+import com.crowdproj.common.events.session.EventNewToken;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -59,14 +62,18 @@ public class WsSystemTest {
     private final WebSocketClient client = new ReactorNettyWebSocketClient();
     private final ObjectMapper mapper = new ObjectMapper();
 
+    private final Duration dur = Duration.ofMillis(2000);
+    private UnicastProcessor<String> output;
+
 
 
     @Before
     public void setUp() {
+        output = UnicastProcessor.create();
     }
 
     @Test
-    public void test05WebSocket() throws IOException, URISyntaxException {
+    public void testError() throws IOException, URISyntaxException {
         EventSessionOpened event = new EventSessionOpened();
         String message;
         try {
@@ -79,8 +86,30 @@ public class WsSystemTest {
 
         Flux<String> input = Flux.just(message);
 
-        Duration dur = Duration.ofMillis(2000);
-        UnicastProcessor<String> output = UnicastProcessor.create();
+        client.execute(new URI("ws://127.0.0.1:" + port + "/ws"), session -> {
+            System.out.println("Test: Starting to send messages");
+            return session
+                .send(input.doOnNext(s -> System.out.println("Test: outbound " + s)).map(session::textMessage))
+                .thenMany(session.receive().take(dur).map(WebSocketMessage::getPayloadAsText))
+                .subscribeWith(output)
+                .doOnNext(s -> {
+                    System.out.println("Test: inbound " + s);
+                    session.close();
+                })
+                .then()
+                .doOnSuccessOrError((aVoid, ex) ->
+                    System.out.println("Test: Done with " + (ex != null ? ex.getMessage() : "success")));
+        })
+        .block(Duration.ofMillis(5000));
+    }
+
+    @Test
+    public void testRequestToken() throws IOException, URISyntaxException {
+        EventRequestToken event = new EventRequestToken();
+        String message = mapper.writeValueAsString(event);
+        System.out.println("Test: sending message to server: " + message);
+
+        Flux<String> input = Flux.just(message);
 
         client.execute(new URI("ws://127.0.0.1:" + port + "/ws"), session -> {
             System.out.println("Test: Starting to send messages");

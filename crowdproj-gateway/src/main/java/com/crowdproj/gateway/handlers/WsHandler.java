@@ -21,21 +21,21 @@ import com.crowdproj.common.events.AbstractEventServer;
 
 public class WsHandler implements WebSocketHandler {
 
-    private UnicastProcessor<AbstractEventServer> eventPublisher;
-    private Flux<String> outputEvents;
-    private ObjectMapper mapper;
+    private static final ObjectMapper mapper = new ObjectMapper();
 
-    public WsHandler(UnicastProcessor<AbstractEventServer> eventPublisher, Flux<AbstractEventServer> events) {
-        this.eventPublisher = eventPublisher;
-        this.mapper = new ObjectMapper();
-        this.outputEvents = Flux.from(events).map(this::serverEventToJson);
+    public WsHandler() {
         System.out.println("############### WsHandler constructor");
     }
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
-        System.out.println("############### WsHandler handler");
-        WebSocketMessageBroker subscriber = new WebSocketMessageBroker(eventPublisher);
+        System.out.println("############### WsHandler handler for session " + session.getId());
+
+        // Исходящий поток
+        UnicastProcessor<AbstractEventServer> sessionEventPublisher = UnicastProcessor.create();
+        Flux<String> sessionOutputEvents = Flux.from(sessionEventPublisher).map(this::serverEventToJson);
+
+        WebSocketMessageBroker subscriber = new WebSocketMessageBroker(sessionEventPublisher, session);
         session.receive()
             .map(WebSocketMessage::getPayloadAsText)
             .map(mess -> {
@@ -45,7 +45,8 @@ public class WsHandler implements WebSocketHandler {
             .map(this::jsonToClientEvent)
             .subscribe(subscriber::onSessionNext, subscriber::onSessionError, subscriber::onSessionComplete);
         subscriber.onSessionOpen();
-        return session.send(outputEvents.map(mess -> {
+
+        return session.send(sessionOutputEvents.map(mess -> {
                 System.out.println("WSH: message responsed: " + mess);
                 return mess;
         }).map(session::textMessage));

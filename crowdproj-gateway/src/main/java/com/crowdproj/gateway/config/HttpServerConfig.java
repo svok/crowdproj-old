@@ -75,6 +75,7 @@ public class HttpServerConfig {
         return MainRouter.doRoute(apiHandler, errorHandler);
     }
 
+/*
     @Bean
     public UnicastProcessor<AbstractEventServer> eventPublisher(){
         return UnicastProcessor.create();
@@ -93,6 +94,23 @@ public class HttpServerConfig {
 
         Map<String, WebSocketHandler> map = new HashMap<>();
         WebSocketHandler wsHandler = new WsHandler(eventPublisher, events);
+
+        // Connect to WebSocket
+        map.put("/ws", wsHandler);
+
+        SimpleUrlHandlerMapping simpleUrlHandlerMapping = new SimpleUrlHandlerMapping();
+        simpleUrlHandlerMapping.setUrlMap(map);
+
+        //Without the order things break :-/
+        simpleUrlHandlerMapping.setOrder(10);
+        return simpleUrlHandlerMapping;
+    }
+*/
+    @Bean
+    public HandlerMapping webSocketMapping() {
+
+        Map<String, WebSocketHandler> map = new HashMap<>();
+        WebSocketHandler wsHandler = new WsHandler();
 
         // Connect to WebSocket
         map.put("/ws", wsHandler);

@@ -4,6 +4,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
 
+import org.springframework.web.reactive.socket.WebSocketSession;
+
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
 import com.crowdproj.common.events.session.EventSessionOpened;
@@ -11,12 +13,16 @@ import com.crowdproj.common.events.session.EventSessionClosed;
 import com.crowdproj.common.events.system.EventServerDefault;
 
 public class WebSocketMessageBroker {
-    private UnicastProcessor<AbstractEventServer> eventPublisher;
+    private final UnicastProcessor<AbstractEventServer> eventPublisher;
+    private final WebSocketSession session;
 
-    public WebSocketMessageBroker(UnicastProcessor<AbstractEventServer> eventPublisher) {
+    public WebSocketMessageBroker(UnicastProcessor<AbstractEventServer> eventPublisher, WebSocketSession session) {
         System.out.println("WSB broker initialized");
         this.eventPublisher = eventPublisher;
+        this.session = session;
     }
+
+    
 
     public void onSessionOpen() {
         System.out.println("WSB session opened");
@@ -56,11 +62,11 @@ public class WebSocketMessageBroker {
     public BrokerHandlerInterface getHandler(AbstractEventClient event) {
         String route = event.getRoute();
 
-/*
+//*
         if(route.equals("session")) {
             return new SessionBrokerHandler(this, event);
         }
-*/
+//*/
         return new DefaultBrokerHandler(this, event);
     }
 
