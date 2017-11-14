@@ -53,7 +53,6 @@ public class HttpServerConfig {
     @Value("${server.host:localhost}")
     private String host = "localhost";
 
-/*
     @Bean
     public HttpServer httpServer(RouterFunction<?> mainRouterFunction) {
         HttpHandler httpHandler = RouterFunctions.toHttpHandler(mainRouterFunction);
@@ -63,7 +62,6 @@ public class HttpServerConfig {
         server.newHandler(adapter);
         return server;
     }
-*/
 
     @Bean
     ErrorHandler errorHandler() {
@@ -75,37 +73,6 @@ public class HttpServerConfig {
         return MainRouter.doRoute(apiHandler, errorHandler);
     }
 
-/*
-    @Bean
-    public UnicastProcessor<AbstractEventServer> eventPublisher(){
-        return UnicastProcessor.create();
-    }
-
-    @Bean
-    public Flux<AbstractEventServer> events(UnicastProcessor<AbstractEventServer> eventPublisher) {
-        return eventPublisher
-//            .replay(25)
-//            .autoConnect()
-        ;
-    }
-
-    @Bean
-    public HandlerMapping webSocketMapping(UnicastProcessor<AbstractEventServer> eventPublisher, Flux<AbstractEventServer> events) {
-
-        Map<String, WebSocketHandler> map = new HashMap<>();
-        WebSocketHandler wsHandler = new WsHandler(eventPublisher, events);
-
-        // Connect to WebSocket
-        map.put("/ws", wsHandler);
-
-        SimpleUrlHandlerMapping simpleUrlHandlerMapping = new SimpleUrlHandlerMapping();
-        simpleUrlHandlerMapping.setUrlMap(map);
-
-        //Without the order things break :-/
-        simpleUrlHandlerMapping.setOrder(10);
-        return simpleUrlHandlerMapping;
-    }
-*/
     @Bean
     public HandlerMapping webSocketMapping() {
 
