@@ -38,9 +38,12 @@ import com.crowdproj.common.models.Signup;
 import com.crowdproj.common.events.session.EventSessionOpened;
 import com.crowdproj.common.events.session.EventSessionClosed;
 
+import org.springframework.test.context.TestPropertySource;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestPropertySource(locations="classpath:testApplication.properties")
 public class WebTest {
 
     @LocalServerPort

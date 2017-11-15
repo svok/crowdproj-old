@@ -49,8 +49,11 @@ import com.crowdproj.common.events.session.EventRequestToken;
 import com.crowdproj.common.events.session.EventRegisterToken;
 import com.crowdproj.common.events.session.EventNewToken;
 
+import org.springframework.test.context.TestPropertySource;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@TestPropertySource(locations="classpath:testApplication.properties")
 //@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class WsSystemTest {
 
