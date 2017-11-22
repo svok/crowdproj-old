@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
@@ -21,18 +19,6 @@ import reactor.kafka.receiver.ReceiverRecord;
 import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOffset;
 
-/**
- * Sample consumer application using Reactive API for Kafka.
- * To run sample consumer
- * <ol>
- *   <li> Start Zookeeper and Kafka server
- *   <li> Update {@link #BOOTSTRAP_SERVERS} and {@link #TOPIC} if required
- *   <li> Create Kafka topic {@link #TOPIC}
- *   <li> Send some messages to the topic, e.g. by running {@link SampleProducer}
- *   <li> Run {@link SampleConsumer} as Java application with all dependent jars in the CLASSPATH (eg. from IDE).
- *   <li> Shutdown Kafka server and Zookeeper when no longer required
- * </ol>
- */
 public class Consumer {
 
     private static final Logger log = LoggerFactory.getLogger(Consumer.class.getName());
@@ -56,31 +42,23 @@ public class Consumer {
         dateFormat = new SimpleDateFormat("HH:mm:ss:SSS z dd MMM yyyy");
     }
 
-    public Disposable consumeMessages(String topic, CountDownLatch latch) {
+    public Disposable consumeMessages(String topic) {
 
         ReceiverOptions<Integer, String> options = receiverOptions.subscription(Collections.singleton(topic))
-                .addAssignListener(partitions -> log.debug("onPartitionsAssigned {}", partitions))
-                .addRevokeListener(partitions -> log.debug("onPartitionsRevoked {}", partitions));
+            .addAssignListener(partitions -> log.debug("onPartitionsAssigned {}", partitions))
+            .addRevokeListener(partitions -> log.debug("onPartitionsRevoked {}", partitions));
         Flux<ReceiverRecord<Integer, String>> kafkaFlux = KafkaReceiver.create(options).receive();
         return kafkaFlux.subscribe(record -> {
-                ReceiverOffset offset = record.receiverOffset();
-                System.out.printf("Received message: topic-partition=%s offset=%d timestamp=%s key=%d value=%s\n",
-                        offset.topicPartition(),
-                        offset.offset(),
-                        dateFormat.format(new Date(record.timestamp())),
-                        record.key(),
-                        record.value());
-                offset.acknowledge();
-                latch.countDown();
-            });
+            ReceiverOffset offset = record.receiverOffset();
+            System.out.printf("Received message: topic-partition=%s offset=%d timestamp=%s key=%d value=%s\n",
+                offset.topicPartition(),
+                offset.offset(),
+                dateFormat.format(new Date(record.timestamp())),
+                record.key(),
+                record.value()
+            );
+            offset.acknowledge();
+        });
     }
 
-    public static void main(String[] args) throws Exception {
-        int count = 20;
-        CountDownLatch latch = new CountDownLatch(count);
-        Consumer consumer = new Consumer(BOOTSTRAP_SERVERS);
-        Disposable disposable = consumer.consumeMessages(TOPIC, latch);
-        latch.await(10, TimeUnit.SECONDS);
-        disposable.dispose();
-    }
 }
