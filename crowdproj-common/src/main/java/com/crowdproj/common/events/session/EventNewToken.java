@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.crowdproj.common.events.AbstractEventServer;
-import com.crowdproj.common.user.Signin;
+import com.crowdproj.common.events.AbstractEventInternal;
 
 public class EventNewToken extends AbstractEventServer {
 
@@ -21,6 +21,9 @@ public class EventNewToken extends AbstractEventServer {
 
     public String getToken() {
         return token;
+    }
+
+    public void fromInternalEvent(AbstractEventInternal event) {
     }
 
     public String toString() {

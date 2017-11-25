@@ -1,9 +1,12 @@
 package com.crowdproj.common.events.user;
 
+import java.lang.ClassCastException;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.crowdproj.common.events.AbstractEventServer;
+import com.crowdproj.common.events.AbstractEventInternal;
 import com.crowdproj.common.user.UserInfo;
 
 public class EventCredentials extends AbstractEventServer {
@@ -22,6 +25,13 @@ public class EventCredentials extends AbstractEventServer {
 
     public UserInfo getUser() {
         return user;
+    }
+
+    public void fromInternalEvent(AbstractEventInternal event) {
+        try {
+            this.setUser((UserInfo) event.getProperty("user"));
+        } catch(ClassCastException e) {
+        }
     }
 
     public String toString() {

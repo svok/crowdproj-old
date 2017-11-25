@@ -30,6 +30,7 @@ abstract public class AbstractEventServer extends AbstractEvent {
         this.timestamp = System.currentTimeMillis();
     }
 
+    abstract public void fromInternalEvent(AbstractEventInternal event);
 
     public int getId() {
         return id;
@@ -46,4 +47,5 @@ abstract public class AbstractEventServer extends AbstractEvent {
             + "    timestamp=" + (timestamp == null ? "null" : "\"" + Long.toString(timestamp) + "\"") + "\n"
         ;
     }
+
 }

@@ -13,20 +13,21 @@ import java.util.Optional;
 
 import java.util.stream.Collectors;
 
+import com.crowdproj.common.user.CpSession;
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
+import com.crowdproj.common.events.AbstractEventInternal;
+//import com.crowdproj.common.events.EventInternalDefault;
 
 public class EventClientDefault extends AbstractEventClient {
 
     protected Map<String, Object> properties = new HashMap<>();
 
-//*
-//    @JsonCreator
+    @JsonCreator
     public EventClientDefault(@JsonProperty("type") String type) {
         super();
         setType(type);
     }
-//*/
 
     @JsonIgnore
     public String getType() {
@@ -41,6 +42,13 @@ public class EventClientDefault extends AbstractEventClient {
     @JsonAnyGetter
     public Map<String, Object> getProperties(){
         return properties;
+    }
+
+    public AbstractEventInternal toInternalEvent(String sessionId, CpSession cps) {
+        AbstractEventInternal e = super.toInternalEvent(sessionId, cps);
+        e.setProperties(this.getProperties());
+
+        return e;
     }
 
     public String toString() {

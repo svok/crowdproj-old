@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
+import com.crowdproj.common.events.AbstractEventInternal;
 
 public class EventError extends AbstractEventServer {
 
@@ -24,6 +25,10 @@ public class EventError extends AbstractEventServer {
 
     public void setError(String error){
         this.error = error;
+    }
+
+    public void fromInternalEvent(AbstractEventInternal event) {
+        this.setError((String) event.getProperty("error"));
     }
 
     public String toString() {

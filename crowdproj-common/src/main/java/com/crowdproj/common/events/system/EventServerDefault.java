@@ -12,33 +12,46 @@ import java.util.Optional;
 
 import java.util.stream.Collectors;
 
+import com.crowdproj.common.user.CpSession;
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
+import com.crowdproj.common.events.AbstractEventInternal;
 
 public class EventServerDefault extends AbstractEventServer {
 
-    protected Map<String, Object> properties = new HashMap<>();
+    protected Map<String, Object> properties = null;
 
-//*
+    @JsonCreator
     public EventServerDefault(@JsonProperty("type") String type) {
         super();
         setType(type);
     }
-//*/
 
     @JsonIgnore
     public String getType() {
         return super.getType();
     }
 
+    public void setProperties(Map<String, Object> properties){
+        this.properties = properties;
+    }
+
     @JsonAnySetter
-    public void setProperties(String name, Object value){
+    public void setProperty(String name, Object value){
+        if(properties == null) {
+            properties = new HashMap<>();
+        }
         properties.put(name, value);
     }
 
     @JsonAnyGetter
     public Map<String, Object> getProperties(){
         return properties;
+    }
+
+    public void fromInternalEvent(AbstractEventInternal event) {
+        this.setType(event.getType());
+        this.setProperties(event.getProperties());
     }
 
     public String toString() {

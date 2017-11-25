@@ -10,6 +10,10 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.crowdproj.common.user.CpSession;
+import com.crowdproj.common.events.AbstractEventInternal;
+import com.crowdproj.common.events.system.EventInternalDefault;
+
 @JsonInclude(Include.NON_NULL)
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CUSTOM,
@@ -19,4 +23,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 )
 @JsonTypeIdResolver(EventTypeIdResolver.class)
 abstract public class AbstractEventClient extends AbstractEvent {
+
+    public AbstractEventInternal toInternalEvent(String sessionId, CpSession cps) {
+        EventInternalDefault e = new EventInternalDefault();
+        e.setType(this.getType());
+        e.setStatus("message", "received_from_client");
+        e.setCpSession(cps);
+        e.setSessionId(sessionId);
+
+        return e;
+    }
+
 }
