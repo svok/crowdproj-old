@@ -22,7 +22,7 @@ abstract public class AbstractEvent {
         if(type_id == null) return null;
 
         int pos = type_id.lastIndexOf(".");
-        return type_id.substring(0, pos > 0 ? pos : 0);
+        return pos == -1 ? null : type_id.substring(0, pos);
     }
 
     public String toString() {

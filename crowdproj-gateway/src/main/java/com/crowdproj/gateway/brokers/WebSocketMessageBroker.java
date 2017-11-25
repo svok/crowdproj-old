@@ -19,6 +19,7 @@ public class WebSocketMessageBroker {
     private final WebSocketSession session;
     private final SessionBrokerHandler sbhandler = new SessionBrokerHandler(this);
     private final DefaultBrokerHandler dbhandler = new DefaultBrokerHandler(this);
+    private final KafkaBrokerHandler   kfhandler = new KafkaBrokerHandler(this);
     private CpSession cps = null;
 
     public WebSocketMessageBroker(UnicastProcessor<AbstractEventServer> eventPublisher, WebSocketSession session) {
@@ -33,6 +34,10 @@ public class WebSocketMessageBroker {
 
     public CpSession getCpSession() {
         return cps;
+    }
+
+    public WebSocketSession getSession() {
+        return session;
     }
 
     public void onSessionOpen() {
@@ -73,10 +78,13 @@ public class WebSocketMessageBroker {
     public BrokerHandlerInterface getHandler(AbstractEventClient event) {
         String route = event.getRoute();
 
-        if(route.equals("session")) {
+        if(route == null) {
+            return dbhandler;
+        } else if(route.equals("session")) {
             return sbhandler;
+        } else {
+            return kfhandler;
         }
-        return dbhandler;
     }
 
     public void sendToClient(AbstractEventServer event) {
