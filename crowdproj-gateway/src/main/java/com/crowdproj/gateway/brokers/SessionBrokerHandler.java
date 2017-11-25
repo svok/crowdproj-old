@@ -15,11 +15,10 @@ import com.crowdproj.common.events.session.EventRequestToken;
 import com.crowdproj.common.events.session.EventRegisterToken;
 import com.crowdproj.common.events.session.EventNewToken;
 
-import com.crowdproj.common.models.CpSession;
+import com.crowdproj.common.user.CpSession;
 
 public class SessionBrokerHandler implements BrokerHandlerInterface {
     private final WebSocketMessageBroker broker;
-    private final AbstractEventClient event;
 
     enum SESSION_CLIENT_CLASSES {
         EventRequestToken,
@@ -27,12 +26,11 @@ public class SessionBrokerHandler implements BrokerHandlerInterface {
         EventError;
     }
 
-    public SessionBrokerHandler(WebSocketMessageBroker broker, AbstractEventClient event) {
+    public SessionBrokerHandler(WebSocketMessageBroker broker) {
         this.broker = broker;
-        this.event = event;
     }
 
-    public void handle() {
+    public void handle(AbstractEventClient event) {
         SESSION_CLIENT_CLASSES cl;
         try {
             cl = SESSION_CLIENT_CLASSES.valueOf(event.getClass().getSimpleName());
@@ -44,6 +42,7 @@ public class SessionBrokerHandler implements BrokerHandlerInterface {
         case EventRequestToken:
             CpSession session = CpSession.createNew();
             try {
+                broker.setCpSession(session);
                 broker.sendToClient(new EventNewToken(session.getToken()));
                 return;
             } catch(IOException e) {
@@ -51,7 +50,24 @@ public class SessionBrokerHandler implements BrokerHandlerInterface {
             }
             break;
         case EventRegisterToken:
+            try {
+                if(! EventRegisterToken.class.isInstance(event)) {
+                    broker.sendToClient(new EventError("Event: " + event.getType() + " is wrong"));
+                    return;
+                }
+                EventRegisterToken e = (EventRegisterToken) event;
+                String token = e.getToken();
+                if(token == null || token == "") {
+                    broker.sendToClient(new EventError("Event: " + event.getType() + " has empty 'token' field"));
+                    return;
+                }
+                broker.setCpSession(CpSession.parseToken(token));
+                return;
+            } catch(IOException e) {
+                System.out.println("Ошибка 500 в " + this.getClass().toString());
+            }
             break;
+        case EventError:
         default:
             broker.sendToClient(new EventError("Event: " + event.getType() + " cannot be handled"));
             break;

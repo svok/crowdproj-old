@@ -6,6 +6,8 @@ import reactor.core.publisher.UnicastProcessor;
 
 import org.springframework.web.reactive.socket.WebSocketSession;
 
+import com.crowdproj.common.user.CpSession;
+
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
 import com.crowdproj.common.events.session.EventSessionOpened;
@@ -15,6 +17,9 @@ import com.crowdproj.common.events.system.EventServerDefault;
 public class WebSocketMessageBroker {
     private final UnicastProcessor<AbstractEventServer> eventPublisher;
     private final WebSocketSession session;
+    private final SessionBrokerHandler sbhandler = new SessionBrokerHandler(this);
+    private final DefaultBrokerHandler dbhandler = new DefaultBrokerHandler(this);
+    private CpSession cps = null;
 
     public WebSocketMessageBroker(UnicastProcessor<AbstractEventServer> eventPublisher, WebSocketSession session) {
         System.out.println("WSB broker initialized");
@@ -22,7 +27,13 @@ public class WebSocketMessageBroker {
         this.session = session;
     }
 
-    
+    public void setCpSession(CpSession cps) {
+        this.cps = cps;
+    }
+
+    public CpSession getCpSession() {
+        return cps;
+    }
 
     public void onSessionOpen() {
         System.out.println("WSB session opened");
@@ -36,7 +47,7 @@ public class WebSocketMessageBroker {
         System.out.println("WSB messageIn: " + event.toString());
 
         BrokerHandlerInterface bh = getHandler(event);
-        bh.handle();
+        bh.handle(event);
 
 /*
         EventServerDefault eventOut = new EventServerDefault("response." + eventIn);
@@ -62,12 +73,10 @@ public class WebSocketMessageBroker {
     public BrokerHandlerInterface getHandler(AbstractEventClient event) {
         String route = event.getRoute();
 
-//*
         if(route.equals("session")) {
-            return new SessionBrokerHandler(this, event);
+            return sbhandler;
         }
-//*/
-        return new DefaultBrokerHandler(this, event);
+        return dbhandler;
     }
 
     public void sendToClient(AbstractEventServer event) {

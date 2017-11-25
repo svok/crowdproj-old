@@ -15,14 +15,12 @@ import com.crowdproj.common.events.system.EventError;
 
 public class DefaultBrokerHandler implements BrokerHandlerInterface {
     private final WebSocketMessageBroker broker;
-    private final AbstractEventClient event;
 
-    public DefaultBrokerHandler(WebSocketMessageBroker broker, AbstractEventClient event) {
+    public DefaultBrokerHandler(WebSocketMessageBroker broker) {
         this.broker = broker;
-        this.event = event;
     }
 
-    public void handle() {
+    public void handle(AbstractEventClient event) {
         broker.sendToClient(new EventError("Event: " + event.getType() + " cannot be handled"));
     }
 }
