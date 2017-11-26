@@ -13,10 +13,12 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.listener.KafkaListenerErrorHandler;
+import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
 
-import com.crowdproj.common.events.AbstractEventClient;
-import com.crowdproj.common.events.AbstractEventServer;
+import com.crowdproj.common.events.AbstractEventInternal;
 import com.crowdproj.gateway.kafka.Receiver;
+import com.crowdproj.gateway.kafka.KafkaReceiverErrorHandler;
 
 @Configuration
 @EnableKafka
@@ -31,24 +33,33 @@ public class KafkaReceiverConfig {
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+    props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, Boolean.valueOf(false));
     props.put(ConsumerConfig.GROUP_ID_CONFIG, "gateway");
 
     return props;
   }
 
   @Bean
-  public ConsumerFactory<String, AbstractEventServer> consumerFactory() {
-    return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(),
-        new JsonDeserializer<>(AbstractEventServer.class));
+  public ConsumerFactory<String, AbstractEventInternal> consumerFactory() {
+    return new DefaultKafkaConsumerFactory<>(
+        consumerConfigs(),
+        new StringDeserializer(),
+        new JsonDeserializer<>(AbstractEventInternal.class)
+    );
   }
 
   @Bean
-  public ConcurrentKafkaListenerContainerFactory<String, AbstractEventServer> kafkaListenerContainerFactory() {
-    ConcurrentKafkaListenerContainerFactory<String, AbstractEventServer> factory =
+  public ConcurrentKafkaListenerContainerFactory<String, AbstractEventInternal> kafkaListenerContainerFactory() {
+    ConcurrentKafkaListenerContainerFactory<String, AbstractEventInternal> factory =
         new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(consumerFactory());
-
+    factory.getContainerProperties().setAckMode(AckMode.MANUAL);
     return factory;
+  }
+
+  @Bean
+  public KafkaListenerErrorHandler receiverErrorHandler() {
+    return new KafkaReceiverErrorHandler();
   }
 
   @Bean

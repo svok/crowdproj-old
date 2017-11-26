@@ -17,6 +17,10 @@ import java.lang.IllegalStateException;
 
 import com.crowdproj.common.events.system.EventClientDefault;
 import com.crowdproj.common.events.system.EventServerDefault;
+import com.crowdproj.common.events.system.EventInternalDefault;
+import com.crowdproj.common.events.AbstractEventClient;
+import com.crowdproj.common.events.AbstractEventServer;
+import com.crowdproj.common.events.AbstractEventInternal;
 
 /**
  * Класс для определения ява-класса по полю type JSON-строки
@@ -109,10 +113,15 @@ public class EventTypeIdResolver extends TypeIdResolverBase
             clazz = Class.forName(clazzName);
         } catch (ClassNotFoundException e) {
             Class<?> baseClass = mBaseType.getRawClass();
+//            if(baseClass.isAssignableFrom(AbstractEventClient.class)) {
             if(baseClass.isAssignableFrom(EventClientDefault.class)) {
                 clazz = EventClientDefault.class;
+//            } else if(baseClass.isAssignableFrom(AbstractEventServer.class)) {
             } else if(baseClass.isAssignableFrom(EventServerDefault.class)) {
                 clazz = EventServerDefault.class;
+//            } else if(baseClass.isAssignableFrom(AbstractEventInternal.class)) {
+            } else if(baseClass.isAssignableFrom(EventInternalDefault.class)) {
+                clazz = EventInternalDefault.class;
             } else {
                 throw new IllegalStateException("Wrong superclass for Event: '" + clazzName + "'");
             }

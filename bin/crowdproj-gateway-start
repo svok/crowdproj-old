@@ -1,0 +1,5 @@
+#!/bin/bash
+
+file=`ls ../libs/crowdproj-gateway-*.jar | sort | tail -1`
+
+java -jar $file

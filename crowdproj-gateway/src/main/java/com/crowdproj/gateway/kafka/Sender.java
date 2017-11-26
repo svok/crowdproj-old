@@ -6,21 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import com.crowdproj.common.events.AbstractEventClient;
-import com.crowdproj.common.events.AbstractEventServer;
+import com.crowdproj.common.events.AbstractEventInternal;
 
 public class Sender {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Sender.class);
-
-  @Value("${kafka.topic.json}")
-  private String jsonTopic;
+  private static final Logger LOG = LoggerFactory.getLogger(Sender.class);
 
   @Autowired
-  private KafkaTemplate<String, AbstractEventClient> kafkaTemplate;
+  private KafkaTemplate<String, AbstractEventInternal> kafkaTemplate;
 
-  public void send(AbstractEventClient event) {
-    LOGGER.info("sending car='{}'", event.toString());
-    kafkaTemplate.send(jsonTopic, event);
+  public void send(String topic, AbstractEventInternal event) {
+    LOG.info("sending to {} event='{}'", topic, event);
+    kafkaTemplate.send(topic, event);
   }
 }
