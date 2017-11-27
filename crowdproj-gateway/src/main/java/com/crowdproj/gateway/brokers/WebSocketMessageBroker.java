@@ -1,10 +1,14 @@
 package com.crowdproj.gateway.brokers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
 
 import org.springframework.web.reactive.socket.WebSocketSession;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.crowdproj.common.user.CpSession;
 
@@ -14,13 +18,20 @@ import com.crowdproj.common.events.session.EventSessionOpened;
 import com.crowdproj.common.events.session.EventSessionClosed;
 import com.crowdproj.common.events.system.EventServerDefault;
 
+import com.crowdproj.gateway.repositories.SessionRepository;
+
 public class WebSocketMessageBroker {
+
+    private static final Logger LOG = LoggerFactory.getLogger(WebSocketMessageBroker.class);
+
     private final UnicastProcessor<AbstractEventServer> eventPublisher;
     private final WebSocketSession session;
     private final SessionBrokerHandler sbhandler = new SessionBrokerHandler(this);
     private final DefaultBrokerHandler dbhandler = new DefaultBrokerHandler(this);
     private final KafkaBrokerHandler   kfhandler = new KafkaBrokerHandler(this);
     private CpSession cps = null;
+
+    private SessionRepository sessionRepository;
 
     public WebSocketMessageBroker(UnicastProcessor<AbstractEventServer> eventPublisher, WebSocketSession session) {
         System.out.println("WSB broker initialized");
@@ -40,8 +51,18 @@ public class WebSocketMessageBroker {
         return session;
     }
 
+    public void setSessionRepository(SessionRepository sessionRepository) {
+        this.sessionRepository = sessionRepository;
+    }
+
     public void onSessionOpen() {
         System.out.println("WSB session opened");
+        if(sessionRepository == null) {
+            LOG.error("Crowdproj error: sessionRepository is NULL");
+        } else {
+            LOG.info("Crowdproj success: sessionRepository is open");
+            sessionRepository.register(session, kfhandler);
+        }
 //        AbstractEventClient event = new EventSessionOpened();
 //        eventPublisher.onNext(event);
     }
@@ -71,6 +92,7 @@ public class WebSocketMessageBroker {
 
     public void onSessionComplete() {
         System.out.println("WSB session close");
+        sessionRepository.unregister(session);
 //        AbstractEventClient event = new EventSessionClosed();
 //        eventPublisher.onNext(event);
     }

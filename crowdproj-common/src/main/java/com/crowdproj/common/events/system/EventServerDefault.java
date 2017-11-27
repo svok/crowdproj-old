@@ -21,6 +21,10 @@ public class EventServerDefault extends AbstractEventServer {
 
     protected Map<String, Object> properties = null;
 
+    public EventServerDefault() {
+        super();
+    }
+
     @JsonCreator
     public EventServerDefault(@JsonProperty("type") String type) {
         super();

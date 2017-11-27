@@ -3,11 +3,15 @@ package com.crowdproj.gateway.config;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.core.env.Environment;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import org.springframework.web.reactive.config.EnableWebFlux;
@@ -36,16 +40,23 @@ import com.crowdproj.gateway.handlers.ApiHandler;
 import com.crowdproj.gateway.handlers.WsHandler;
 import com.crowdproj.gateway.handlers.ErrorHandler;
 import com.crowdproj.gateway.routers.MainRouter;
+import com.crowdproj.gateway.repositories.SessionRepository;
 
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
 
 @Configuration
 @EnableWebFlux
+@ComponentScan("com.crowdproj.gateway")
 public class HttpServerConfig {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ApiHandler.class);
 
     @Autowired
     private Environment environment;
+
+    @Autowired
+    SessionRepository sessionRepository;
 
     @Value("${server.port:8080}")
     private int port = 8080;
@@ -77,7 +88,7 @@ public class HttpServerConfig {
     public HandlerMapping webSocketMapping() {
 
         Map<String, WebSocketHandler> map = new HashMap<>();
-        WebSocketHandler wsHandler = new WsHandler();
+        WebSocketHandler wsHandler = new WsHandler(sessionRepository);
 
         // Connect to WebSocket
         map.put("/ws", wsHandler);
@@ -137,4 +148,5 @@ public class HttpServerConfig {
     public WebSocketService webSocketService() {
         return new HandshakeWebSocketService(new ReactorNettyRequestUpgradeStrategy());
     }
+
 }

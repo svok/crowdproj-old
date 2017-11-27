@@ -2,6 +2,7 @@ package com.crowdproj.gateway.handlers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.crowdproj.gateway.brokers.WebSocketMessageBroker;
+import com.crowdproj.gateway.repositories.SessionRepository;
 
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
@@ -20,6 +22,12 @@ import com.crowdproj.common.events.AbstractEventServer;
 public class WsHandler implements WebSocketHandler {
 
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    private final SessionRepository sessionRepository;
+
+    public WsHandler(SessionRepository sessionRepository) {
+        this.sessionRepository = sessionRepository;
+    }
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
@@ -30,6 +38,7 @@ public class WsHandler implements WebSocketHandler {
         Flux<String> sessionOutputEvents = Flux.from(sessionEventPublisher).map(this::serverEventToJson);
 
         WebSocketMessageBroker subscriber = new WebSocketMessageBroker(sessionEventPublisher, session);
+        subscriber.setSessionRepository(sessionRepository);
 
         // Входящий поток
         session.receive()
