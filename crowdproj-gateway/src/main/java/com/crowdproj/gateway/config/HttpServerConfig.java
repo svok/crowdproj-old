@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.socket.WebSocketSession;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
@@ -39,6 +41,8 @@ import reactor.ipc.netty.http.server.HttpServer;
 import com.crowdproj.gateway.handlers.ApiHandler;
 import com.crowdproj.gateway.handlers.WsHandler;
 import com.crowdproj.gateway.handlers.ErrorHandler;
+import com.crowdproj.gateway.handlers.WebSocketMessageBrokerFactory;
+import com.crowdproj.gateway.handlers.WsHandler;
 import com.crowdproj.gateway.routers.MainRouter;
 import com.crowdproj.gateway.repositories.SessionRepository;
 
@@ -56,7 +60,13 @@ public class HttpServerConfig {
     private Environment environment;
 
     @Autowired
-    SessionRepository sessionRepository;
+    private BeanFactory beanFactory;
+
+    @Autowired
+    private SessionRepository sessionRepository;
+
+    @Autowired
+    private WebSocketMessageBrokerFactory webSocketMessageBrokerFactory;
 
     @Value("${server.port:8080}")
     private int port = 8080;
@@ -88,7 +98,7 @@ public class HttpServerConfig {
     public HandlerMapping webSocketMapping() {
 
         Map<String, WebSocketHandler> map = new HashMap<>();
-        WebSocketHandler wsHandler = new WsHandler(sessionRepository);
+        WebSocketHandler wsHandler = beanFactory.getBean(WsHandler.class);
 
         // Connect to WebSocket
         map.put("/ws", wsHandler);
@@ -99,6 +109,11 @@ public class HttpServerConfig {
         //Without the order things break :-/
         simpleUrlHandlerMapping.setOrder(10);
         return simpleUrlHandlerMapping;
+    }
+
+    @Bean
+    public WsHandler wsHandler() {
+        return new WsHandler();
     }
 
 /*

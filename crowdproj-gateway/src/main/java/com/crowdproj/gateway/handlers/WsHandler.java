@@ -2,6 +2,7 @@ package com.crowdproj.gateway.handlers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
@@ -13,7 +14,7 @@ import reactor.core.publisher.UnicastProcessor;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.crowdproj.gateway.brokers.WebSocketMessageBroker;
+//import com.crowdproj.gateway.brokers.WebSocketMessageBroker;
 import com.crowdproj.gateway.repositories.SessionRepository;
 
 import com.crowdproj.common.events.AbstractEventClient;
@@ -23,11 +24,11 @@ public class WsHandler implements WebSocketHandler {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private final SessionRepository sessionRepository;
+    @Autowired
+    private BeanFactory beanFactory;
 
-    public WsHandler(SessionRepository sessionRepository) {
-        this.sessionRepository = sessionRepository;
-    }
+    @Autowired
+    private WebSocketMessageBrokerFactory webSocketMessageBrokerFactory;
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
@@ -37,8 +38,8 @@ public class WsHandler implements WebSocketHandler {
         UnicastProcessor<AbstractEventServer> sessionEventPublisher = UnicastProcessor.create();
         Flux<String> sessionOutputEvents = Flux.from(sessionEventPublisher).map(this::serverEventToJson);
 
-        WebSocketMessageBroker subscriber = new WebSocketMessageBroker(sessionEventPublisher, session);
-        subscriber.setSessionRepository(sessionRepository);
+        //WebSocketMessageBroker subscriber = new WebSocketMessageBroker(sessionEventPublisher, session);
+        WebSocketMessageBroker subscriber = webSocketMessageBrokerFactory.build(sessionEventPublisher, session);
 
         // Входящий поток
         session.receive()
