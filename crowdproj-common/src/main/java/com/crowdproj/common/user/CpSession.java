@@ -6,10 +6,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonAnyGetter;
+//import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 import java.util.Properties;
+import java.util.Map;
+import java.util.HashMap;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -20,28 +30,50 @@ public class CpSession {
 
     protected String sessionId;
     protected String userId;
+    protected String[] roles;
     protected Date now;
     protected Date exp;
 
     private static String base64SecretBytes;
 
-
     public static CpSession createNew() {
-        CpSession session = new CpSession();
-        session.sessionId = UUID.randomUUID().toString();
-        session.now = new Date();
-        session.exp = new Date(System.currentTimeMillis() + (30000 * 3600 * 24)); // 30 seconds
-        return session;
+        return new CpSession();
     }
 
+    public CpSession() {
+        sessionId = UUID.randomUUID().toString();
+        now = new Date();
+        exp = new Date(System.currentTimeMillis() + (30 * 3600000 * 24)); // 30 seconds
+    }
+
+    @JsonCreator
+    public CpSession(
+        @JsonProperty("id") String sessionId,
+        @JsonProperty("uid") String userId,
+        @JsonProperty("now") Long nowTs,
+        @JsonProperty("exp") Long expTs
+    ) {
+        this.sessionId = sessionId;
+        this.userId = userId;
+        this.now = new Date(nowTs);
+        this.exp = new Date(expTs);
+    }
+
+    @JsonIgnore
     public CpSession setIdentity(UserInterface user) {
         this.userId = user.getId();
         return this;
     }
 
+    @JsonSetter("id")
     public CpSession setSessionId(String sessionId) {
         this.sessionId = sessionId;
         return this;
+    }
+
+    @JsonGetter("id")
+    public String getSessionId() {
+        return sessionId;
     }
 
     public CpSession setUserId(String userId) {
@@ -49,7 +81,41 @@ public class CpSession {
         return this;
     }
 
+    @JsonGetter("uid")
+    public String getUserId() {
+        return userId;
+    }
+
+    @JsonGetter("now")
+    public Long getNowTs() {
+        return now.getTime();
+    }
+
+    @JsonGetter("exp")
+    public Long getExpTs() {
+        return exp.getTime();
+    }
+
+    @JsonGetter("roles")
+    public String[] getRoles() {
+        return roles;
+    }
+
+    @JsonSetter("roles")
+    public void setRoles(String[] roles) {
+        this.roles = roles;
+    }
+
+    @JsonSetter("roles")
+    public void getRoles(String[] roles) {
+        this.roles = roles;
+    }
+
+    @JsonIgnore
     public String getToken() throws IOException {
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", roles);
 
         String token = Jwts.builder()
             .setId(sessionId)
@@ -57,7 +123,8 @@ public class CpSession {
             .setNotBefore(now)
             .setExpiration(exp)
             .setSubject(userId)
-//            .setIssuer(issuer)
+            .addClaims(claims)
+            .setIssuer("CrowdProj")
 //            .setAudience(audience)
             .signWith(SignatureAlgorithm.HS256, getSecretString())
             .compact()
@@ -77,9 +144,11 @@ public class CpSession {
             .setSessionId(claims.getId())
             .setUserId(claims.getSubject())
         ;
+        session.setRoles(claims.get("roles", String[].class));
         session.exp = claims.getExpiration();
         session.now = claims.getNotBefore();
 
+        /*
         System.out.println("----------------------------");
         System.out.println("ID: " + claims.getId());
         System.out.println("Subject: " + claims.getSubject());
@@ -87,6 +156,7 @@ public class CpSession {
         System.out.println("Expiration : " + claims.getExpiration());
         System.out.println("Not Before : "+claims.getNotBefore());
         System.out.println("Audience :: "+claims.getAudience());
+        */
 
         return session;
     }
