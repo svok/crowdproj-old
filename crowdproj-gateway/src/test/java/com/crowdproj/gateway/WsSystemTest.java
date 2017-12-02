@@ -103,7 +103,7 @@ public class WsSystemTest {
                 .doOnSuccessOrError((aVoid, ex) ->
                     System.out.println("Test: Done with " + (ex != null ? ex.getMessage() : "success")));
         })
-        .block(Duration.ofMillis(5000));
+        .block(Duration.ofMillis(10000));
     }
 
     @Test
@@ -128,7 +128,7 @@ public class WsSystemTest {
                 .doOnSuccessOrError((aVoid, ex) ->
                     System.out.println("Test: Done with " + (ex != null ? ex.getMessage() : "success")));
         })
-        .block(Duration.ofMillis(5000));
+        .block(Duration.ofMillis(10000));
     }
 
 }

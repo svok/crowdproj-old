@@ -5,6 +5,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledExecutorService;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
@@ -85,28 +90,25 @@ public class WebSocketMessageBroker {
         }
         AbstractEventClient event = new EventSessionOpened();
         event.setType("session.session-opened");
-//        eventPublisher.onNext(event);
         onSessionNext(event);
     }
 
     public void onSessionError(Throwable error) {
         //TODO log error
-        System.out.println("WSB session error");
-        error.printStackTrace();
+        LOG.error("WSB session error: {}", error);
     }
 
     public void onSessionComplete() {
-        System.out.println("WSB session close");
+        LOG.info("WSB session close");
         sessionRepository.unregister(session);
         AbstractEventClient event = new EventSessionClosed();
         event.setType("session.session-closed");
-//        eventPublisher.onNext(event);
         onSessionNext(event);
     }
 
     public void onSessionNext(AbstractEventClient event) {
 
-        System.out.println("WSB messageIn: " + event.toString());
+        LOG.info("WSB messageIn: {}", event);
 
         String route = event.getRoute();
         if(route == null || route == "") {
@@ -123,13 +125,26 @@ public class WebSocketMessageBroker {
 
         switch(cl) {
         case EventSessionOpened:
+            // Такой же как EventRequestToken, но с задержкой
+            cps = CpSession.createNew();
+            ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+            Runnable task = () -> {
+                try {
+                    LOG.info("Sending new token: {}", cps.getToken());
+                    sendToClient(new EventNewToken(cps.getToken()));
+                } catch(IOException e) {
+                    LOG.error("Cannot send error message to client: {}", e);
+                }
+            };
+            ScheduledFuture<?> future = executor.schedule(task, 25, TimeUnit.MILLISECONDS);
+            break;
         case EventRequestToken:
             cps = CpSession.createNew();
             try {
                 sendToClient(new EventNewToken(cps.getToken()));
-                return;
             } catch(IOException e) {
-                System.out.println("Ошибка 500 в " + this.getClass().toString());
+                LOG.error("Cannot send error message to client in {}: {}", this.getClass(), e);
             }
             break;
         case EventRegisterToken:
@@ -147,17 +162,19 @@ public class WebSocketMessageBroker {
                 cps = CpSession.parseToken(token);
                 return;
             } catch(IOException e) {
-                System.out.println("Ошибка 500 в " + this.getClass().toString());
+                sendToClient(new EventError("Cannot register token: " + e.getMessage()));
+                LOG.error("Token registration error: {}", e);
             }
             break;
         default:
-            AbstractEventInternal ei = event.toInternalEvent(session.getId(), cps);
-            if(sender == null) {
-                System.out.println("Sender is not initialized");
-            } else {
-                sender.send(route, ei);
-            }
             break;
+        }
+
+        AbstractEventInternal ei = event.toInternalEvent(session.getId(), cps);
+        if(sender == null) {
+            LOG.error("Sender is not initialized");
+        } else {
+            sender.send(route, ei);
         }
 
     }

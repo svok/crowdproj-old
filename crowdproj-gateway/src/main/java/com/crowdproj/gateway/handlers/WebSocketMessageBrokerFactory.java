@@ -32,6 +32,8 @@ import com.crowdproj.common.events.system.EventError;
 import com.crowdproj.gateway.repositories.SessionRepository;
 import com.crowdproj.gateway.kafka.Sender;
 
+import com.crowdproj.common.user.CpSession;
+
 @Service
 public class WebSocketMessageBrokerFactory {
 
@@ -42,6 +44,15 @@ public class WebSocketMessageBrokerFactory {
 
     @Autowired
     private Sender sender;
+
+
+    public WebSocketMessageBrokerFactory() {
+        try {
+            CpSession.getSecretString();
+        } catch (Exception e) {
+            LOG.error("Cannot init CpSession: {}", e);
+        }
+    }
 
     public WebSocketMessageBroker build(UnicastProcessor<AbstractEventServer> eventPublisher, WebSocketSession session) {
         WebSocketMessageBroker mb = new WebSocketMessageBroker(eventPublisher, session);

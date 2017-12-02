@@ -6,6 +6,8 @@
     <title>Swagger UI</title>
     <!-- script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
 </head>
 
 <body>
@@ -29,35 +31,69 @@
 </script-->
 
 <script>
-var sock = new WebSocket("ws://localhost:9000/ws", ["protocolOne", "protocolTwo"]);
-sock.onopen = function(event) {
-    console.log('open');
-    console.log(event);
-    var json = {
-        "type": "system.test",
-        "payload": {
-            "user": {
-                "id": "1234",
-                "email": "point@point.po"
-            },
-            "point": "one",
-            "manyPoints": [1,2,3],
-            "Object": {
-                "this":"is"
-            }
+
+var sock;
+
+$(document).ready(function() {
+    sock = new WebSocket("ws://localhost:9000/ws"); //, ["protocolOne", "protocolTwo"]);
+
+    sock.onmessage = function(event) {
+        console.log("message received", event.data.type);
+        var mess = JSON.parse(event.data);
+        switch(mess.type) {
+        case "session.new-token":
+            console.log("new token received", event.data);
+            break;
+        default:
+            console.log("other message", event.data);
+            break;
         }
     };
-    sock.send(JSON.stringify(json));
-};
 
-sock.onmessage = function(event) {
-    console.log('message', event.data);
-//     sock.close();
-};
+    sock.onclose = function() {
+        console.log('close');
+    };
 
-sock.onclose = function() {
-     console.log('close');
-};
+    sock.onopen = function(event) {
+        console.log('open');
+        console.log(event);
+        var json;
+        var timerId = setTimeout(function() {
+            var json = {
+                "type": "session.request-token"
+            };
+            sock.send(JSON.stringify(json));
+        }, 10000);
+        json = {
+            "type": "system.test",
+            "payload": {
+                "user": {
+                    "id": "1234",
+                    "email": "point@point.po"
+                },
+                "point": "one",
+                "manyPoints": [1,2,3],
+                "Object": {
+                    "this":"is"
+                }
+            }
+        };
+        sock.send(JSON.stringify(json));
+    };
+
+});
+
+var timeout;
+
+$(window).on('beforeunload', function(){
+    console.log("page is unloading");
+    if(sock) {
+//        timeout = setTimeout(function());
+        console.log("disconnecting websocket");
+        sock.close();
+    }
+});
+
 </script>
 </body>
 
