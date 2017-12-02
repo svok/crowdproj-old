@@ -11,8 +11,14 @@ import org.springframework.kafka.listener.ListenerExecutionFailedException;
 import org.springframework.kafka.listener.KafkaListenerErrorHandler;
 import org.springframework.kafka.support.Acknowledgment;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
 import com.crowdproj.common.events.AbstractEventInternal;
 
+@Service
+@Scope(value = "singleton")
 public class Receiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(Receiver.class);
