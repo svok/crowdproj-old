@@ -24,12 +24,12 @@ import com.crowdproj.common.events.system.EventInternalDefault;
 @JsonTypeIdResolver(EventTypeIdResolver.class)
 abstract public class AbstractEventClient extends AbstractEvent {
 
-    public AbstractEventInternal toInternalEvent(String sessionId, CpSession cps) {
+    public AbstractEventInternal toInternalEvent(String wsSessionId, CpSession cps) {
         EventInternalDefault e = new EventInternalDefault();
         e.setType(this.getType());
         e.setStatus("message", "received_from_client");
         e.setCpSession(cps);
-        e.setSessionId(sessionId);
+        e.setWsSessionId(wsSessionId);
 
         return e;
     }

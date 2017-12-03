@@ -108,7 +108,7 @@ public class WebSocketMessageBroker {
 
     public void onSessionNext(AbstractEventClient event) {
 
-        LOG.info("WSB messageIn: {}", event);
+        LOG.info("WSB: messageIn: {}", event);
 
         String route = event.getRoute();
         if(route == null || route == "") {
@@ -131,7 +131,7 @@ public class WebSocketMessageBroker {
 
             Runnable task = () -> {
                 try {
-                    LOG.info("Sending new token: {}", cps.getToken());
+                    LOG.info("WSB: Sending new token: {}", cps.getToken());
                     sendToClient(new EventNewToken(cps.getToken()));
                 } catch(IOException e) {
                     LOG.error("Cannot send error message to client: {}", e);
@@ -180,13 +180,15 @@ public class WebSocketMessageBroker {
     }
 
     public void onMessage(AbstractEventInternal ei) {
+        LOG.info("WSB: Message from Kafka received: {}", ei);
         EventServerDefault es = new EventServerDefault();
         es.fromInternalEvent(ei);
+        LOG.info("Sending to client: {}", es);
         sendToClient(es);
     }
 
     public void sendToClient(AbstractEventServer event) {
-        System.out.println("Sending message to client: " + event.toString());
+        System.out.println("WSB: Sending message to client: " + event.toString());
         eventPublisher.onNext(event);
     }
 

@@ -67,7 +67,7 @@ public class EventsTest {
         UserInfo user = new UserInfo();
         user.setId(UUID.randomUUID().toString());
         user.setEmail("one@two.three");
-        user.setProperties("lname", "Петров");
+        user.setProperty("lname", "Петров");
         AbstractEventServer event = new EventCredentials(user);
         String json = mapper.writeValueAsString(event);
 

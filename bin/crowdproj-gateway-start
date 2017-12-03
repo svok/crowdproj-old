@@ -2,4 +2,4 @@
 
 file=`ls ../libs/crowdproj-gateway-*.jar | sort | tail -1`
 
-java -jar $file
+java -jar $file > gateway.log 2>&1

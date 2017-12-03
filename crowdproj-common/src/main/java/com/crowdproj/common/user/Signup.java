@@ -87,4 +87,18 @@ public class Signup {
         return this;
     }
 
+    public UserInfo toUser()
+    {
+        UserInfo user = new UserInfo()
+            .setEmail(email)
+            .setProperty("bdate", bdate)
+            .setProperty("password", password)
+        ;
+
+        //for(Map.Entry<String, Object> prop: getProperties()) {
+        //    user.setProperty(prop.getKey(), prop.getValue());
+        //}
+        return user;
+    }
+
 }

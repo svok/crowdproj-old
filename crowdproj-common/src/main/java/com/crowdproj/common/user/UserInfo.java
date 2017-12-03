@@ -31,8 +31,9 @@ public class UserInfo implements UserInterface {
         return id;
     }
 
-    public void setId(String id) {
+    public UserInfo setId(String id) {
         this.id = id;
+        return this;
     }
 
     // --- email -----
@@ -41,8 +42,9 @@ public class UserInfo implements UserInterface {
         return email;
     }
 
-    public void setEmail(String email) {
+    public UserInfo setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     // --- type -----
@@ -53,8 +55,9 @@ public class UserInfo implements UserInterface {
     }
 
     @JsonIgnore
-    public void setType(UserType type) {
+    public UserInfo setType(UserType type) {
         this.type = type;
+        return this;
     }
 
     @JsonGetter("type_id")
@@ -63,23 +66,31 @@ public class UserInfo implements UserInterface {
     }
 
     @JsonSetter("type_id")
-    public void setType(Integer typeId) {
+    public UserInfo setType(Integer typeId) {
         this.type = UserType.create(typeId);
+        return this;
     }
 
     @JsonIgnore
-    public void setType(String typeTag) {
+    public UserInfo setType(String typeTag) {
         this.type = UserType.create(typeTag);
+        return this;
     }
 
     @JsonAnySetter
-    public void setProperties(String name, Object value){
+    public UserInfo setProperty(String name, Object value){
         properties.put(name, value);
+        return this;
     }
 
     @JsonAnyGetter
     public Map<String, Object> getProperties(){
         return properties;
+    }
+
+    @JsonIgnore
+    public Object getProperty(String prop){
+        return properties.get(prop);
     }
 
     @Override

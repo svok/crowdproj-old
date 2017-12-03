@@ -1,0 +1,43 @@
+apply plugin: 'application'
+
+description = "Echo microservice"
+
+def flinkVersion = "1.3.+"
+mainClassName = 'com.crowdproj.echo.EchoMs'
+
+configurations {
+    includeInJar {
+        description = 'get added to jar'
+        transitive = false
+    }
+    compile {
+        description = 'compile classpath'
+        transitive = true
+        extendsFrom includeInJar
+    }
+}
+
+
+dependencies {
+    compile project(':crowdproj-common')
+
+    // flink
+    compile "org.apache.flink:flink-java:$flinkVersion"
+    compile "org.apache.flink:flink-clients_2.11:$flinkVersion"
+    compile "org.apache.flink:flink-streaming-java_2.11:$flinkVersion"
+    compile "org.apache.flink:flink-cep_2.11:$flinkVersion"
+//    compile "org.apache.flink:flink-connector-kafka-0.10_2.11:$flinkVersion"
+    includeInJar "org.apache.flink:flink-connector-kafka-0.10_2.11:$flinkVersion"
+
+    // test framework
+    testCompile "org.apache.flink:flink-test-utils_2.11:$flinkVersion"
+    testCompile "org.apache.flink:flink-streaming-java_2.11:$flinkVersion:tests"
+
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class' : 'com.crowdproj.echo.EchoMs'
+    }
+    from configurations.runtime.collect { zipTree(it) }
+}

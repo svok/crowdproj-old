@@ -31,7 +31,7 @@ abstract public class AbstractEventInternal extends AbstractEvent {
 
     protected final String id;
     protected final Long tsCreated;
-    protected String sessionId;
+    protected String wsSessionId;
     protected CpSession cpSession;
     protected Map<String, Object> statuses = null;
     protected Map<String, Object> properties = null;
@@ -75,13 +75,13 @@ abstract public class AbstractEventInternal extends AbstractEvent {
         return tsCreated;
     }
 
-    // sessionId
-    public String getSessionId() {
-        return sessionId;
+    // wsSessionId
+    public String getWsSessionId() {
+        return wsSessionId;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setWsSessionId(String wsSessionId) {
+        this.wsSessionId = wsSessionId;
     }
 
     // cpSession
@@ -150,8 +150,8 @@ abstract public class AbstractEventInternal extends AbstractEvent {
             .append("    tsCreated=")
             .append(tsCreated)
             .append("\n")
-            .append("    sessionId=")
-            .append(sessionId)
+            .append("    wsSessionId=")
+            .append(wsSessionId)
             .append("\n")
             .append("    cpSession=")
             .append(cpSession)

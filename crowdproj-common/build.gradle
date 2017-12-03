@@ -1,11 +1,7 @@
 apply plugin: 'java'
 
-description = "Библиотека моделей, которые используются в разных подпроектах"
+description = "Library of components common for all other components"
 
 dependencies {
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.+'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.+'
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.+'
-
-    testCompile 'junit:junit:4.+'
 }

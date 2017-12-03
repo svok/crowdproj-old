@@ -1,7 +1,5 @@
 package com.crowdproj.gateway.kafka;
 
-import java.util.concurrent.CountDownLatch;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +14,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.crowdproj.common.events.AbstractEventInternal;
+import com.crowdproj.gateway.repositories.SessionRepository;
+import com.crowdproj.gateway.ws.WebSocketMessageBroker;
 
 @Service
 @Scope(value = "singleton")
@@ -23,16 +23,21 @@ public class Receiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(Receiver.class);
 
-    private CountDownLatch latch = new CountDownLatch(1);
+    @Autowired
+    private SessionRepository sessionRepository;
 
-    public CountDownLatch getLatch() {
-        return latch;
-    }
 
     @KafkaListener(topics = "${kafka.topic.json}", errorHandler = "receiverErrorHandler")
     public void receive(AbstractEventInternal event, Acknowledgment ack) {
         LOG.info("received event='{}'", event);
-        latch.countDown();
+
+        WebSocketMessageBroker mb = sessionRepository.get(event.getWsSessionId());
+        if(mb != null) {
+            mb.onMessage(event);
+        } else {
+            LOG.error("Session {} not found in repository for incoming kafka event: {}", event.getWsSessionId(), event);
+        }
+
         ack.acknowledge();
     }
 

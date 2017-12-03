@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.crowdproj.common.models.Signin;
+import com.crowdproj.common.user.Signin;
 
 public class SigninTest {
 

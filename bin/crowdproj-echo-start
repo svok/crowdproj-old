@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export PATH=$PATH:/opt/flink/bin
+
+file=`ls ../libs/crowdproj-ms-echo-*.jar | sort | tail -1`
+
+flink run $file

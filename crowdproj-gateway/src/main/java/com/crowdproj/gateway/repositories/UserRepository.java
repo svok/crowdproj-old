@@ -14,42 +14,42 @@ import reactor.core.publisher.Mono;
 
 import java.text.ParseException;
 
-import com.crowdproj.common.models.User;
-import com.crowdproj.common.models.Signin;
-import com.crowdproj.common.models.Signup;
+import com.crowdproj.common.user.UserInfo;
+import com.crowdproj.common.user.Signin;
+import com.crowdproj.common.user.Signup;
 
 @Repository
 public class UserRepository {
 
-    private final List<User> users = new ArrayList<User>(Arrays.asList(
-        new User()
+    private final List<UserInfo> users = new ArrayList<UserInfo>(Arrays.asList(
+        new UserInfo()
             .setId("1")
             .setEmail("ivan@ivanovich.ivanov")
-            .setFName("Ivan")
-            .setMName("Ivanovich")
-            .setLName("Ivanov")
-            .setBDate("1987-01-12")
+            .setProperty("fname", "Ivan")
+            .setProperty("mname", "Ivanovich")
+            .setProperty("lname", "Ivanov")
+            .setProperty("bdate", "1987-01-12")
         ,
-        new User()
+        new UserInfo()
             .setId("2")
             .setEmail("peter@petrovich.petrov")
-            .setFName("Petr")
-            .setMName("Petrovich")
-            .setLName("Petrov")
-            .setBDate("1987-04-12")
+            .setProperty("fname", "Petr")
+            .setProperty("mname", "Petrovich")
+            .setProperty("lname", "Petrov")
+            .setProperty("bdate", "1987-04-12")
     ));
 
-    public Mono<User> getUserById(String id) {
+    public Mono<UserInfo> getUserById(String id) {
         return Mono.justOrEmpty(users.stream().filter(user -> {
             return user.getId().equals(id);
         }).findFirst().orElse(null));
     }
 
-    public Flux<User> getUsers() {
+    public Flux<UserInfo> getUsers() {
         return Flux.fromIterable(users);
     }
 
-    public Mono<User> signin(Mono<Signin> signinMono) {
+    public Mono<UserInfo> signin(Mono<Signin> signinMono) {
         return signinMono.flatMap(signin -> {
             return Mono.justOrEmpty(users.stream().filter(user -> {
                 return user.getEmail().equals(signin.getEmail());
@@ -61,7 +61,7 @@ public class UserRepository {
 
         return signupMono.doOnNext(signup -> {
             int id = users.size() + 1;
-            User user = signup.toUser()
+            UserInfo user = signup.toUser()
                 .setId(Integer.toString(id))
             ;
             users.add(user);
@@ -71,10 +71,10 @@ public class UserRepository {
 
     }
 
-    public Flux<User> signupTest(Mono<Signup> signupMono) {
+    public Flux<UserInfo> signupTest(Mono<Signup> signupMono) {
         return signupMono.doOnNext(signup -> {
             int id = users.size() + 1;
-            User user = signup.toUser()
+            UserInfo user = signup.toUser()
                 .setId(Integer.toString(id))
             ;
             users.add(user);
