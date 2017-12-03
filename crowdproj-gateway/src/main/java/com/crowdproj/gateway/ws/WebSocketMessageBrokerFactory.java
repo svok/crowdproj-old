@@ -1,4 +1,4 @@
-package com.crowdproj.gateway.handlers;
+package com.crowdproj.gateway.ws;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,15 +44,6 @@ public class WebSocketMessageBrokerFactory {
 
     @Autowired
     private Sender sender;
-
-
-    public WebSocketMessageBrokerFactory() {
-        try {
-            CpSession.getSecretString();
-        } catch (Exception e) {
-            LOG.error("Cannot init CpSession: {}", e);
-        }
-    }
 
     public WebSocketMessageBroker build(UnicastProcessor<AbstractEventServer> eventPublisher, WebSocketSession session) {
         WebSocketMessageBroker mb = new WebSocketMessageBroker(eventPublisher, session);

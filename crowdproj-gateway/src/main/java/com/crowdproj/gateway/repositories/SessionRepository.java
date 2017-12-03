@@ -13,12 +13,11 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import com.crowdproj.gateway.handlers.WebSocketMessageBroker;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-//import org.springframework.context.ApplicationContext;
+
+import com.crowdproj.gateway.ws.WebSocketMessageBroker;
 
 @Service
 @Scope(value = "singleton")

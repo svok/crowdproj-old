@@ -16,10 +16,9 @@ import org.springframework.http.HttpStatus;
 
 import reactor.core.publisher.Mono;
 
-import com.crowdproj.common.models.User;
-import com.crowdproj.common.models.Signin;
-import com.crowdproj.common.models.Signup;
-import com.crowdproj.common.models.CpSession;
+//import com.crowdproj.common.user.User;
+//import com.crowdproj.common.user.Signin;
+//import com.crowdproj.common.user.Signup;
 
 import com.crowdproj.gateway.repositories.UserRepository;
 
@@ -28,12 +27,10 @@ public class ApiHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
 
-    @Value("${server.secret}")
-    private String secret;
-
     @Autowired
     private UserRepository userRepository;
 
+/*
     public Mono<ServerResponse> signin(ServerRequest request) {
         System.out.println("########### signin");
         Mono<Signin> signin = request.bodyToMono(Signin.class);
@@ -66,19 +63,5 @@ public class ApiHandler {
             .switchIfEmpty(ServerResponse.notFound().build())
         ;
     }
-
-    public Mono<ServerResponse> getNewSession(ServerRequest request) {
-
-        CpSession session = CpSession.createNew();
-
-        try {
-            String tag = session.getToken();
-            return ServerResponse.ok().body(BodyInserters.fromObject(tag));
-        } catch(IOException e) {
-            System.out.println("Ошибка 500 в getNewSession");
-            return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-
-    }
-
+*/
 }

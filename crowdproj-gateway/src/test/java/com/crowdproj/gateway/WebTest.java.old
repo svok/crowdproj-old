@@ -52,6 +52,7 @@ public class WebTest {
     @Autowired
     private WebTestClient webTestClient;
 
+/*
     @Test
     public void test00Users() throws IOException {
         FluxExchangeResult<User> result = webTestClient
@@ -109,35 +110,6 @@ public class WebTest {
         assert user.getBDateString().equals("1987-01-12");
     }
 
-/*
-    @Test
-    public void test03SignupTest() throws IOException {
-
-        Signup signup = new Signup()
-            .setEmail("pikal@pikalovichich.pikalov")
-            .setPassword("123456")
-            .setFName("Pikal")
-            .setMName("Pikalovich")
-            .setLName("Pikalov")
-            .setBDate("1983-06-18")
-        ;
-
-        FluxExchangeResult<User> result_post = webTestClient
-            .post()
-            .uri("/api/signupTest")
-            .accept(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromObject(signup))
-            .exchange()
-            .returnResult(User.class)
-        ;
-        System.out.println("Code: ");
-        System.out.println(result_post.getStatus().value());
-        assert result_post.getStatus().value() == 200;
-        List<User> users = result_post.getResponseBody().collectList().block();
-        assert users.size() == 3;
-    }
-*/
-
     @Test
     public void test04Signup() throws IOException {
 
@@ -192,4 +164,5 @@ public class WebTest {
                 .isNotFound();
     }
 
+*/
 }

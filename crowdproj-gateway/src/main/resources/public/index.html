@@ -38,7 +38,7 @@ $(document).ready(function() {
     sock = new WebSocket("ws://localhost:9000/ws"); //, ["protocolOne", "protocolTwo"]);
 
     sock.onmessage = function(event) {
-        console.log("message received", event.data.type);
+        console.log("message received", event);
         var mess = JSON.parse(event.data);
         switch(mess.type) {
         case "session.new-token":

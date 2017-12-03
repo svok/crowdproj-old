@@ -9,7 +9,7 @@ public class MainRouter {
 
     public static RouterFunction<?> doRoute(final ApiHandler handler, final ErrorHandler errorHandler) {
         return StaticRouter.doIndexRoute()
-            .andOther(ApiRouter.doRoute(handler, errorHandler))
+//            .andOther(ApiRouter.doRoute(handler, errorHandler))
             .andOther(StaticRouter.doRoute())
         ;
     }

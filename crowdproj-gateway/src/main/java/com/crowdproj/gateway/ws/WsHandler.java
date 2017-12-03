@@ -1,7 +1,11 @@
-package com.crowdproj.gateway.handlers;
+package com.crowdproj.gateway.ws;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.socket.WebSocketHandler;
@@ -14,13 +18,15 @@ import reactor.core.publisher.UnicastProcessor;
 import java.io.IOException;
 import java.util.Optional;
 
-//import com.crowdproj.gateway.brokers.WebSocketMessageBroker;
 import com.crowdproj.gateway.repositories.SessionRepository;
 
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
 
+@Service
 public class WsHandler implements WebSocketHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(WebSocketHandler.class);
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -32,20 +38,19 @@ public class WsHandler implements WebSocketHandler {
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
-        System.out.println("############### WsHandler handler for session " + session.getId());
+        LOG.info("############### WsHandler handler for session {}", session.getId());
 
         // Исходящий поток
         UnicastProcessor<AbstractEventServer> sessionEventPublisher = UnicastProcessor.create();
         Flux<String> sessionOutputEvents = Flux.from(sessionEventPublisher).map(this::serverEventToJson);
 
-        //WebSocketMessageBroker subscriber = new WebSocketMessageBroker(sessionEventPublisher, session);
         WebSocketMessageBroker subscriber = webSocketMessageBrokerFactory.build(sessionEventPublisher, session);
 
         // Входящий поток
         session.receive()
             .map(WebSocketMessage::getPayloadAsText)
             .map(mess -> {
-                System.out.println("WSH: message received: " + mess);
+                LOG.info("WSH: message received: {}", mess);
                 return mess;
             })
             .map(this::jsonToClientEvent)
@@ -53,7 +58,7 @@ public class WsHandler implements WebSocketHandler {
         subscriber.onSessionOpen();
 
         return session.send(sessionOutputEvents.map(mess -> {
-            System.out.println("WSH: message responsed: " + mess);
+            LOG.info("WSH: message responsed: {}", mess);
             return mess;
         }).map(session::textMessage));
     }

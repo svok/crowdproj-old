@@ -125,8 +125,7 @@ public class CpSession {
             .setSubject(userId)
             .addClaims(claims)
             .setIssuer("CrowdProj")
-//            .setAudience(audience)
-            .signWith(SignatureAlgorithm.HS256, getSecretString())
+            .signWith(SignatureAlgorithm.HS256, getSecret())
             .compact()
         ;
 
@@ -135,7 +134,7 @@ public class CpSession {
 
     public static CpSession parseToken(String token) throws IOException {
         Claims claims = Jwts.parser()
-            .setSigningKey(getSecretString())
+            .setSigningKey(getSecret())
             .parseClaimsJws(token)
             .getBody()
         ;
@@ -161,13 +160,19 @@ public class CpSession {
         return session;
     }
 
-    public static String getSecretString() throws IOException {
+    @JsonIgnore
+    public static void setSecret(String sstr) {
+        base64SecretBytes = sstr;
+    }
 
-        // Если уже инициализировали, то пытаемся прочитать из переменной
-        if(base64SecretBytes != null) {
+    @JsonIgnore
+    public static String getSecret() throws IOException {
+
+//        if(base64SecretBytes != null) {
             return base64SecretBytes;
-        }
+//        }
 
+/*
         String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
         System.out.println("rootPath: " + rootPath);
         String appConfigPath = rootPath + "application.properties";
@@ -186,13 +191,36 @@ public class CpSession {
         } catch (IOException e) {
         }
 
-        Key secret = MacProvider.generateKey(SignatureAlgorithm.HS256);
-        byte[] secretBytes = secret.getEncoded();
-        base64SecretBytes = Base64.getEncoder().encodeToString(secretBytes);
+        base64SecretBytes = CpSession.generateSecret();
         appProps.put("server.secret", base64SecretBytes);
         appProps.store(new FileOutputStream(appConfigPath), "Security server.secret property is written");
 
         return base64SecretBytes;
+*/
+    }
+
+    public static String generateSecret() {
+        Key secret = MacProvider.generateKey(SignatureAlgorithm.HS256);
+        byte[] secretBytes = secret.getEncoded();
+        return Base64.getEncoder().encodeToString(secretBytes);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(1024)
+            .append("CpSession [sessionId=")
+            .append(sessionId)
+            .append(", userId=")
+            .append(userId)
+            .append(", roles=")
+            .append(roles)
+            .append(", now=")
+            .append(now)
+            .append(", exp=")
+            .append(exp)
+            .append("]")
+        ;
+        return sb.toString();
     }
 
 }

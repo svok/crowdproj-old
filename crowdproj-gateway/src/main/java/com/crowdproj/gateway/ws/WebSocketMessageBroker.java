@@ -1,4 +1,4 @@
-package com.crowdproj.gateway.handlers;
+package com.crowdproj.gateway.ws;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
