@@ -14,6 +14,13 @@ import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.util.serialization.JSONDeserializationSchema;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
+import org.apache.flink.api.common.functions.MapFunction;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.crowdproj.common.events.AbstractEventInternal;
+import com.crowdproj.common.events.system.EventInternalDefault;
+import com.crowdproj.common.events.echo.EventEcho;
 
 public class EchoMs {
 
@@ -31,12 +38,36 @@ public class EchoMs {
         DataStream<String> stream = env
             .addSource(new FlinkKafkaConsumer010<>("echo", new SimpleStringSchema(), properties));
 
+        final ObjectMapper mapper = new ObjectMapper();
+
         //myConsumer.assignTimestampsAndWatermarks(new CustomWatermarkEmitter());
+        DataStream<String> responseStream = stream.map(new MapFunction<String, AbstractEventInternal>() {
+
+            @Override
+            public AbstractEventInternal map(String json) throws Exception {
+                return mapper.readValue(json, AbstractEventInternal.class);
+                // return new Word(value1.word, value1.frequency + value2.frequency);
+            }
+        }).map(new MapFunction<AbstractEventInternal, AbstractEventInternal>() {
+
+            @Override
+            public AbstractEventInternal map(AbstractEventInternal event) throws Exception {
+                event.setType("echo.response: ");
+                event.setProperty("class", event.getClass().getName());
+                return event;
+            }
+        }).map(new MapFunction<AbstractEventInternal, String>() {
+
+            @Override
+            public String map(AbstractEventInternal event) throws Exception {
+                String json = mapper.writeValueAsString(event);
+                return json;
+            }
+        });
 
 
-//        /*
         FlinkKafkaProducer010.FlinkKafkaProducer010Configuration producerConfig = FlinkKafkaProducer010.writeToKafkaWithTimestamps(
-            stream,                   // input stream
+            responseStream,                   // input stream
             "gateway",                // target topic
             new SimpleStringSchema(), // serialization schema
             properties                // custom configuration for KafkaProducer (including broker list)
@@ -47,6 +78,6 @@ public class EchoMs {
 //        myProducerConfig.setFlushOnCheckpoint(true);  // "false" by default
 //        */
 
-        env.execute("Flink Streaming Java API Skeleton");
+        env.execute("Flink Streaming echo microservice");
     }
 }
