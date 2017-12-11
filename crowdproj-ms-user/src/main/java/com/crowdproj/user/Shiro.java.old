@@ -1,0 +1,25 @@
+package com.crowdproj.user;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.*;
+import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.Factory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Shiro {
+
+    private static final Logger log = LoggerFactory.getLogger(Shiro.class);
+
+    private final Factory<SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");
+    private final SecurityManager securityManager = factory.getInstance();
+
+    public Shiro() {
+
+        SecurityUtils.setSecurityManager(securityManager);
+
+    }
+}

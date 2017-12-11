@@ -20,15 +20,15 @@ import reactor.core.publisher.Mono;
 //import com.crowdproj.common.user.Signin;
 //import com.crowdproj.common.user.Signup;
 
-import com.crowdproj.gateway.repositories.UserRepository;
+//import com.crowdproj.gateway.repositories.UserRepository;
 
 @Service
 public class ApiHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
 
-    @Autowired
-    private UserRepository userRepository;
+    // @Autowired
+    // private UserRepository userRepository;
 
 /*
     public Mono<ServerResponse> signin(ServerRequest request) {

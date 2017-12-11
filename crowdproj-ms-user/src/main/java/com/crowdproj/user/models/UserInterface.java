@@ -1,4 +1,4 @@
-package com.crowdproj.common.user;
+package com.crowdproj.user.models;
 
 public interface UserInterface {
     public String getId();

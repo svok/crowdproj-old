@@ -13,7 +13,7 @@ import java.util.Optional;
 
 import java.util.stream.Collectors;
 
-import com.crowdproj.common.user.CpSession;
+import com.crowdproj.common.models.CpSession;
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
 import com.crowdproj.common.events.AbstractEventInternal;

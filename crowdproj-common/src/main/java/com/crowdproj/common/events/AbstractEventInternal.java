@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 
-import com.crowdproj.common.user.CpSession;
+import com.crowdproj.common.models.CpSession;
 
 @JsonInclude(Include.NON_NULL)
 @JsonTypeInfo(
@@ -71,7 +71,7 @@ abstract public class AbstractEventInternal extends AbstractEvent {
     }
 
     // TsCreated
-    public long getTsCreated() {
+    public Long getTsCreated() {
         return tsCreated;
     }
 

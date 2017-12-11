@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.crowdproj.common.user.CpSession;
+import com.crowdproj.common.models.CpSession;
 import com.crowdproj.common.events.AbstractEventInternal;
 import com.crowdproj.common.events.system.EventInternalDefault;
 

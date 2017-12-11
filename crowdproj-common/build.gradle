@@ -2,6 +2,25 @@ apply plugin: 'java'
 
 description = "Library of components common for all other components"
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.+'
+    }
+}
+apply plugin: 'com.google.protobuf'
+
+protobuf {
+  // Configure the protoc executable
+  protoc {
+    // Download from repositories
+    artifact = 'com.google.protobuf:protoc:3.+'
+  }
+}
+
 dependencies {
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.+'
+    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.+'
 }

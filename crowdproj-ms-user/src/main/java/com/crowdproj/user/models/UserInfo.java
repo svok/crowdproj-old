@@ -1,4 +1,4 @@
-package com.crowdproj.common.user;
+package com.crowdproj.user.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

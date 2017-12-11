@@ -7,15 +7,15 @@ import java.util.UUID;
 
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
-import com.crowdproj.common.events.user.EventSignin;
-import com.crowdproj.common.events.user.EventCredentials;
+//import com.crowdproj.common.events.user.EventSignin;
+//import com.crowdproj.common.events.user.EventCredentials;
 import com.crowdproj.common.events.session.EventNewToken;
 import com.crowdproj.common.events.system.EventClientDefault;
 import com.crowdproj.common.events.system.EventServerDefault;
 import com.crowdproj.common.events.system.EventError;
 
-import com.crowdproj.common.user.Signin;
-import com.crowdproj.common.user.UserInfo;
+//import com.crowdproj.common.user.Signin;
+//import com.crowdproj.common.user.UserInfo;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,13 +25,14 @@ public class EventsTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
 
-    protected static final String jsonSignin = "{\"type\":\"user.signin\",\"signin\":{\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
-    protected static final String jsonCredentials = "{\"type\":\"user.credentials\",\"user\":{\"id\":\"123456-123456\",\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
+    //protected static final String jsonSignin = "{\"type\":\"user.signin\",\"signin\":{\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
+    //protected static final String jsonCredentials = "{\"type\":\"user.credentials\",\"user\":{\"id\":\"123456-123456\",\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
     protected static final String jsonNewToken = "{\"type\":\"session.new-token\",\"token\":\"This is a client token\"}";
     protected static final String jsonDefaultClient = "{\"type\":\"default.client\",\"default\":\"Some default\",\"client\":\"some client\"}";
     protected static final String jsonDefaultServer = "{\"type\":\"default.server\",\"default\":\"Some default\",\"server\":\"some server\"}";
     protected static final String jsonError = "{\"type\":\"system.error\",\"error\":\"Some error\"}";
 
+    /*
     @Test
     public void testJsonToSignin() throws IOException {
         AbstractEventClient event = mapper.readValue(jsonSignin, AbstractEventClient.class);
@@ -74,6 +75,7 @@ public class EventsTest {
         System.out.println("EventCredentials json conversion string: " + json);
         assert json.contains("\"user.credentials\"");
     }
+    */
 
     @Test
     public void testJsonToNewToken() throws IOException {

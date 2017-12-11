@@ -1,4 +1,4 @@
-package com.crowdproj.common.user;
+package com.crowdproj.user.models;
 
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonInclude;

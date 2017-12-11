@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationContext;
 
 import org.springframework.web.reactive.socket.WebSocketSession;
 
-import com.crowdproj.common.user.CpSession;
+import com.crowdproj.common.models.CpSession;
 
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
@@ -31,8 +31,6 @@ import com.crowdproj.common.events.system.EventError;
 
 import com.crowdproj.gateway.repositories.SessionRepository;
 import com.crowdproj.gateway.kafka.Sender;
-
-import com.crowdproj.common.user.CpSession;
 
 @Service
 public class WebSocketMessageBrokerFactory {

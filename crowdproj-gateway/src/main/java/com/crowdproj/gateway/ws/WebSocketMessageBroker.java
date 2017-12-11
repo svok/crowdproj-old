@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.crowdproj.common.user.CpSession;
+import com.crowdproj.common.models.CpSession;
 
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;

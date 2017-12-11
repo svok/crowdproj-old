@@ -1,4 +1,4 @@
-package com.crowdproj.common.user;
+package com.crowdproj.user.models;
 
 import java.util.Map;
 import java.util.TreeMap;

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.crowdproj.common.events.AbstractEventClient;
-import com.crowdproj.common.user.Signin;
 
 public class EventSessionOpened extends AbstractEventClient {
 

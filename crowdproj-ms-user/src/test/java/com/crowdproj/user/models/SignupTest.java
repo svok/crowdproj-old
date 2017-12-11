@@ -1,4 +1,4 @@
-package com.crowdproj.common.models;
+package com.crowdproj.user.models;
 
 import java.io.IOException;
 import java.util.List;

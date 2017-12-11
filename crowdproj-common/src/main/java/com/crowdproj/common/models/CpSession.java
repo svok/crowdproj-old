@@ -1,4 +1,4 @@
-package com.crowdproj.common.user;
+package com.crowdproj.common.models;
 
 import java.security.Key;
 import java.io.IOException;
@@ -60,8 +60,8 @@ public class CpSession {
     }
 
     @JsonIgnore
-    public CpSession setIdentity(UserInterface user) {
-        this.userId = user.getId();
+    public CpSession setIdentity(String userId) {
+        this.userId = userId;
         return this;
     }
 

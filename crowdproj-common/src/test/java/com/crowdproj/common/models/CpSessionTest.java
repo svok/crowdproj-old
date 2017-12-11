@@ -1,4 +1,4 @@
-package com.crowdproj.common.user;
+package com.crowdproj.common.models;
 
 import java.io.IOException;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.crowdproj.common.user.CpSession;
+import com.crowdproj.common.models.CpSession;
 
 public class CpSessionTest {
 

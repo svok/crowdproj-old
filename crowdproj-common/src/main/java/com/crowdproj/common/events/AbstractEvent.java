@@ -3,6 +3,7 @@ package com.crowdproj.common.events;
 import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.crowdproj.common.events.system.EventClientDefault;
 import com.crowdproj.common.events.system.EventServerDefault;
@@ -24,6 +25,7 @@ abstract public class AbstractEvent {
         return type_id == null ? calcType(this, getClass()) : type_id;
     }
 
+    @JsonIgnore
     public String getRoute() {
         if(type_id == null) return null;
 
