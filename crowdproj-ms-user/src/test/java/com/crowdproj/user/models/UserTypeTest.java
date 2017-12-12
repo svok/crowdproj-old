@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.crowdproj.common.user.UserType;
+import com.crowdproj.user.models.UserType;
 
 public class UserTypeTest {
 

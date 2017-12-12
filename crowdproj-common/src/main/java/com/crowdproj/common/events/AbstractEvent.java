@@ -27,10 +27,11 @@ abstract public class AbstractEvent {
 
     @JsonIgnore
     public String getRoute() {
-        if(type_id == null) return null;
+        String type = getType();
+        if(type == null) return null;
 
-        int pos = type_id.lastIndexOf(".");
-        return pos == -1 ? null : type_id.substring(0, pos);
+        int pos = type.lastIndexOf(".");
+        return pos == -1 ? null : type.substring(0, pos);
     }
 
     public String calcType() {

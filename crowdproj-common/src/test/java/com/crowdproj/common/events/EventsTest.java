@@ -4,6 +4,8 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
+import java.util.List;
+import java.util.Arrays;
 
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
@@ -13,6 +15,8 @@ import com.crowdproj.common.events.session.EventNewToken;
 import com.crowdproj.common.events.system.EventClientDefault;
 import com.crowdproj.common.events.system.EventServerDefault;
 import com.crowdproj.common.events.system.EventError;
+
+import com.crowdproj.common.models.Error;
 
 //import com.crowdproj.common.user.Signin;
 //import com.crowdproj.common.user.UserInfo;
@@ -25,57 +29,10 @@ public class EventsTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
 
-    //protected static final String jsonSignin = "{\"type\":\"user.signin\",\"signin\":{\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
-    //protected static final String jsonCredentials = "{\"type\":\"user.credentials\",\"user\":{\"id\":\"123456-123456\",\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
     protected static final String jsonNewToken = "{\"type\":\"session.new-token\",\"token\":\"This is a client token\"}";
     protected static final String jsonDefaultClient = "{\"type\":\"default.client\",\"default\":\"Some default\",\"client\":\"some client\"}";
     protected static final String jsonDefaultServer = "{\"type\":\"default.server\",\"default\":\"Some default\",\"server\":\"some server\"}";
-    protected static final String jsonError = "{\"type\":\"system.error\",\"error\":\"Some error\"}";
-
-    /*
-    @Test
-    public void testJsonToSignin() throws IOException {
-        AbstractEventClient event = mapper.readValue(jsonSignin, AbstractEventClient.class);
-
-        System.out.println("EventSignin class: " + event.toString());
-        assert event instanceof EventSignin;
-        assert event.getType().equals("user.signin");
-        assert event.getRoute().equals("user");
-        assert ((EventSignin)event).getSignin().getEmail().equals("one@two.tree");
-    }
-
-    @Test
-    public void testSigninToJson() throws IOException {
-        AbstractEventClient event = new EventSignin((new Signin()).setEmail("one@two.three").setPassword("Secret"));
-        event.setType("user.signin");
-        String json = mapper.writeValueAsString(event);
-
-        System.out.println("EventSignin json conversion string: " + json);
-        assert json.contains("\"user.signin\"");
-    }
-
-    @Test
-    public void testJsonToCredentials() throws IOException {
-        AbstractEventServer event = mapper.readValue(jsonCredentials, AbstractEventServer.class);
-
-        System.out.println("EventCredentials class: " + event.toString());
-        assert event instanceof EventCredentials;
-        assert event.getType().equals("user.credentials");
-    }
-
-    @Test
-    public void testCredentialsToJson() throws IOException {
-        UserInfo user = new UserInfo();
-        user.setId(UUID.randomUUID().toString());
-        user.setEmail("one@two.three");
-        user.setProperty("lname", "Петров");
-        AbstractEventServer event = new EventCredentials(user);
-        String json = mapper.writeValueAsString(event);
-
-        System.out.println("EventCredentials json conversion string: " + json);
-        assert json.contains("\"user.credentials\"");
-    }
-    */
+    protected static final String jsonError = "{\"type\":\"system.error\",\"errors\":[{\"error\":\"Some error\",\"component\":\"user-page\",\"field\":\"password\"}]}";
 
     @Test
     public void testJsonToNewToken() throws IOException {
@@ -141,12 +98,16 @@ public class EventsTest {
         System.out.println("EventError class: " + event.toString());
         assert event instanceof EventError;
         assert event.getType().equals("system.error");
-        assert ((EventError)event).getError().equals("Some error");
+        assert ((EventError)event).getErrors() instanceof List;
+        assert ((EventError)event).getErrors().get(0) instanceof Error;
+        assert ((EventError)event).getErrors().get(0).getError().equals("Some error");
     }
 
     @Test
     public void testErrorToJson() throws IOException {
-        AbstractEventServer event = new EventError("Some error");
+        AbstractEventServer event = new EventError().setErrors(
+            Arrays.asList(new Error().setError("Some error").setComponent("some-component").setField("some-field"))
+        );
         String json = mapper.writeValueAsString(event);
 
         System.out.println("EventError json conversion string: " + json);

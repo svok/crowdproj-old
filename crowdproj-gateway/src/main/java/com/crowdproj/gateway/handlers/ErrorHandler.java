@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import com.crowdproj.common.exceptions.PathNotFoundException;
-import com.crowdproj.common.models.ErrorResponse;
+import com.crowdproj.common.models.Error;
 
 public class ErrorHandler {
 
@@ -28,6 +28,6 @@ public class ErrorHandler {
         return monoError.transform(ThrowableTranslator::translate)
                 .flatMap(translation -> ServerResponse
                         .status(translation.getHttpStatus())
-                        .body(Mono.just(new ErrorResponse(translation.getMessage())), ErrorResponse.class));
+                        .body(Mono.just(new Error(translation.getMessage())), Error.class));
     }
 }

@@ -14,7 +14,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
-import com.crowdproj.common.events.AbstractEventInternal;
+//import com.crowdproj.common.events.AbstractEventInternal;
+import com.crowdproj.common.events.system.EventInternalDefault;
 import com.crowdproj.gateway.kafka.Sender;
 
 @Configuration
@@ -37,12 +38,14 @@ public class KafkaSenderConfig {
     }
 
     @Bean
-    public ProducerFactory<String, AbstractEventInternal> producerFactory() {
+//    public ProducerFactory<String, AbstractEventInternal> producerFactory() {
+    public ProducerFactory<String, EventInternalDefault> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
-    public KafkaTemplate<String, AbstractEventInternal> kafkaTemplate() {
+//    public KafkaTemplate<String, AbstractEventInternal> kafkaTemplate() {
+    public KafkaTemplate<String, EventInternalDefault> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 

@@ -16,27 +16,31 @@ public class EventSigninTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
 
-    protected static final String jsonSignin = "{\"type\":\"user.signin\",\"signin\":{\"email\":\"one@two.tree\",\"password\":\"secret\"}}";
+    protected static final String jsonSignin = "{\"type\":\"user.signin\",\"identity\":\"one@two.tree\",\"password\":\"secret\"}";
 
     @Test
-    public void testJsonToSignin() throws IOException {
+    public void testJsonToEvent() throws IOException {
         AbstractEventInternal event = mapper.readValue(jsonSignin, AbstractEventInternal.class);
 
         System.out.println("EventSignin class: " + event.toString());
         assert event instanceof EventSignin;
         assert event.getType().equals("user.signin");
+        assert event.getRoute() != null;
         assert event.getRoute().equals("user");
-        assert ((EventSignin)event).getSignin().getEmail().equals("one@two.tree");
+        assert ((EventSignin)event).getIdentity().equals("one@two.tree");
+        assert ((EventSignin)event).getPassword().equals("secret");
     }
 
     @Test
-    public void testSigninToJson() throws IOException {
-        AbstractEventInternal event = new EventSignin((new Signin()).setEmail("one@two.three").setPassword("Secret"));
+    public void testEventToJson() throws IOException {
+        AbstractEventInternal event = new EventSignin().setIdentity("one@two.three").setPassword("Secret");
         event.setType("user.signin");
         String json = mapper.writeValueAsString(event);
 
         System.out.println("EventSignin json conversion string: " + json);
         assert json.contains("\"user.signin\"");
+        assert json.contains("\"one@two.three\"");
+        assert json.contains("\"Secret\"");
     }
 
 }

@@ -6,7 +6,7 @@ include 'services:webservice'
 include 'crowdproj-common'
 include 'crowdproj-gateway'
 include 'crowdproj-ms-echo'
-//include 'crowdproj-ms-user'
+include 'crowdproj-ms-user'
 
 rootProject.name = 'crowdproj'
 //rootProject.children.each {project ->

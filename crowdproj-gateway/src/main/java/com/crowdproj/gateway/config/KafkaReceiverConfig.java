@@ -17,7 +17,8 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.listener.KafkaListenerErrorHandler;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
 
-import com.crowdproj.common.events.AbstractEventInternal;
+//import com.crowdproj.common.events.AbstractEventInternal;
+import com.crowdproj.common.events.system.EventInternalDefault;
 import com.crowdproj.gateway.kafka.Receiver;
 import com.crowdproj.gateway.kafka.KafkaReceiverErrorHandler;
 
@@ -45,17 +46,30 @@ public class KafkaReceiverConfig {
     }
 
     @Bean
-    public ConsumerFactory<String, AbstractEventInternal> consumerFactory() {
+//    public ConsumerFactory<String, AbstractEventInternal> consumerFactory() {
+    public ConsumerFactory<String, EventInternalDefault> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(
                 consumerConfigs(),
                 new StringDeserializer(),
-                new JsonDeserializer<>(AbstractEventInternal.class)
+//                new JsonDeserializer<>(AbstractEventInternal.class)
+                new JsonDeserializer<>(EventInternalDefault.class)
         );
     }
 
+/*
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, AbstractEventInternal> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, AbstractEventInternal> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        factory.getContainerProperties().setAckMode(AckMode.MANUAL);
+        return factory;
+    }
+*/
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, EventInternalDefault> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, EventInternalDefault> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         factory.getContainerProperties().setAckMode(AckMode.MANUAL);

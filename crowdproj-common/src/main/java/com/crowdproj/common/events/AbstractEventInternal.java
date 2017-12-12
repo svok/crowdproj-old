@@ -3,7 +3,9 @@ package com.crowdproj.common.events;
 import java.lang.StringBuilder;
 
 import java.util.Map;
+import java.util.List;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 
 import com.crowdproj.common.models.CpSession;
+import com.crowdproj.common.models.Error;
 
 @JsonInclude(Include.NON_NULL)
 @JsonTypeInfo(
@@ -34,7 +37,7 @@ abstract public class AbstractEventInternal extends AbstractEvent {
     protected String wsSessionId;
     protected CpSession cpSession;
     protected Map<String, Object> statuses = null;
-    protected Map<String, Object> properties = null;
+    protected List<Error> errors = null;
 
     public AbstractEventInternal() {
         super();
@@ -115,30 +118,20 @@ abstract public class AbstractEventInternal extends AbstractEvent {
         statuses.put(key, val);
     }
 
-    // Other properties
-    @JsonIgnore
-    public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+    // Errors
+    public List<Error> getErrors() {
+        return errors;
     }
 
-    @JsonAnySetter
-    public void setProperty(String name, Object value) {
-        if(properties == null) {
-            properties = new HashMap<>();
+    public void setErrors(List<Error> errors) {
+        this.errors = errors;
+    }
+
+    public void addError(Error error) {
+        if(errors == null) {
+            errors = new ArrayList<Error>();
         }
-        properties.put(name, value);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getProperties(){
-        return properties;
-    }
-
-    public Object getProperty(String name) {
-        if(properties == null) {
-            return null;
-        }
-        return properties.get(name);
+        errors.add(error);
     }
 
     public String toString() {
@@ -159,8 +152,8 @@ abstract public class AbstractEventInternal extends AbstractEvent {
             .append("    statuses=")
             .append(statuses)
             .append("\n")
-            .append("    properties=")
-            .append(properties)
+            .append("    errors=")
+            .append(errors)
             .append("\n")
         ;
 

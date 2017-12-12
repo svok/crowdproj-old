@@ -52,7 +52,7 @@ public class EventServerDefault extends AbstractEventServer {
         return properties;
     }
 
-    public void fromInternalEvent(AbstractEventInternal event) {
+    public void fromInternalEvent(EventInternalDefault event) {
         this.setType(event.getType());
         this.setProperties(event.getProperties());
     }

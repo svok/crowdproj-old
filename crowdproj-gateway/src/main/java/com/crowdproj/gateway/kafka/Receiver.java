@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import com.crowdproj.common.events.AbstractEventInternal;
+import com.crowdproj.common.events.system.EventInternalDefault;
 import com.crowdproj.gateway.repositories.SessionRepository;
 import com.crowdproj.gateway.ws.WebSocketMessageBroker;
 
@@ -28,7 +28,7 @@ public class Receiver {
 
 
     @KafkaListener(topics = "${kafka.topic.json}", errorHandler = "receiverErrorHandler")
-    public void receive(AbstractEventInternal event, Acknowledgment ack) {
+    public void receive(EventInternalDefault event, Acknowledgment ack) {
         LOG.info("received event='{}'", event);
 
         WebSocketMessageBroker mb = sessionRepository.get(event.getWsSessionId());

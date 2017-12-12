@@ -5,29 +5,48 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.crowdproj.common.models.CpSession;
 import com.crowdproj.common.events.AbstractEventInternal;
-import com.crowdproj.user.models.Signin;
 
 public class EventSignin extends AbstractEventInternal {
 
-    protected Signin signin;
+    protected String identity;
+    protected String password;
+
+    public EventSignin() {
+        super();
+    }
 
     @JsonCreator
-    public EventSignin(@JsonProperty("signin") Signin signin) {
-        setSignin(signin);
+    public EventSignin(@JsonProperty("identity") String identity, @JsonProperty("password") String password) {
+        setIdentity(identity);
+        setPassword(password);
     }
 
-    public void setSignin(Signin signin) {
-        this.signin = signin;
+    // --- email -----
+    public String getIdentity() {
+        return identity;
     }
 
-    public Signin getSignin() {
-        return signin;
+    public EventSignin setIdentity(String identity) {
+        this.identity = identity;
+        return this;
     }
 
+    // passwords
+    public String getPassword() {
+        return password;
+    }
+
+    public EventSignin setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    @Override
     public String toString() {
         return super.toString()
-            + "    signin=" + (signin == null ? "null" : "\"" + signin.toString() + "\"") + "\n"
-        ;
+            + "    identity=" + identity
+            + "\n    password=" + password
+            + "\n";
     }
 
 }

@@ -44,8 +44,8 @@ public class EventClientDefault extends AbstractEventClient {
         return properties;
     }
 
-    public AbstractEventInternal toInternalEvent(String sessionId, CpSession cps) {
-        AbstractEventInternal e = super.toInternalEvent(sessionId, cps);
+    public EventInternalDefault toInternalEvent(String sessionId, CpSession cps) {
+        EventInternalDefault e = super.toInternalEvent(sessionId, cps);
         e.setProperties(this.getProperties());
 
         return e;

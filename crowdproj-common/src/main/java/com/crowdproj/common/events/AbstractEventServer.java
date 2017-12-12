@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import com.crowdproj.common.events.system.EventInternalDefault;
 
 @JsonInclude(Include.NON_NULL)
 @JsonTypeInfo(
@@ -30,7 +31,7 @@ abstract public class AbstractEventServer extends AbstractEvent {
         this.timestamp = System.currentTimeMillis();
     }
 
-    abstract public void fromInternalEvent(AbstractEventInternal event);
+    abstract public void fromInternalEvent(EventInternalDefault event);
 
     public int getId() {
         return id;

@@ -11,7 +11,6 @@ import org.springframework.kafka.listener.KafkaListenerErrorHandler;
 import org.springframework.kafka.support.Acknowledgment;
 import org.apache.kafka.clients.consumer.Consumer;
 
-import com.crowdproj.common.events.AbstractEventInternal;
 //import com.crowdproj.common.events.system.EventInternalDefault;
 
 public class KafkaReceiverErrorHandler implements KafkaListenerErrorHandler {

@@ -1,7 +1,9 @@
 package com.crowdproj.echo;
 
-import com.crowdproj.common.events.AbstractEventInternal;
 import org.apache.flink.api.common.functions.MapFunction;
+
+import com.crowdproj.common.events.AbstractEventInternal;
+import com.crowdproj.common.events.echo.EventEcho;
 
 class Updater implements MapFunction<AbstractEventInternal, AbstractEventInternal> {
 
@@ -9,7 +11,9 @@ class Updater implements MapFunction<AbstractEventInternal, AbstractEventInterna
     public AbstractEventInternal map(AbstractEventInternal event) throws Exception {
         System.out.println("Updater: " + event);
         event.setType("echo.response: ");
-        event.setProperty("class", event.getClass().getName());
+        if(event instanceof EventEcho) {
+            ((EventEcho)event).setProperty("class", event.getClass().getName());
+        }
         return event;
     }
 }

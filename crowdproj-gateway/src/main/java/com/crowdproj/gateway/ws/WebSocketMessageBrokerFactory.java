@@ -20,14 +20,12 @@ import com.crowdproj.common.models.CpSession;
 
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
-import com.crowdproj.common.events.AbstractEventInternal;
 import com.crowdproj.common.events.session.EventSessionOpened;
 import com.crowdproj.common.events.session.EventSessionClosed;
 import com.crowdproj.common.events.session.EventRequestToken;
 import com.crowdproj.common.events.session.EventRegisterToken;
 import com.crowdproj.common.events.session.EventNewToken;
 import com.crowdproj.common.events.system.EventServerDefault;
-import com.crowdproj.common.events.system.EventError;
 
 import com.crowdproj.gateway.repositories.SessionRepository;
 import com.crowdproj.gateway.kafka.Sender;

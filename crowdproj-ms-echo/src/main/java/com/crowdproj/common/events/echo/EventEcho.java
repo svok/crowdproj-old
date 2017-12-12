@@ -17,6 +17,8 @@ import com.crowdproj.common.events.AbstractEventInternal;
 
 public class EventEcho extends AbstractEventInternal {
 
+    protected Map<String, Object> properties = null;
+
     public EventEcho() {
         super();
     }
@@ -28,6 +30,42 @@ public class EventEcho extends AbstractEventInternal {
         @JsonProperty("tsCreated") Long tsCreated
     ) {
         super(type, id, tsCreated);
+    }
+
+    // Other properties
+    @JsonIgnore
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+
+    @JsonAnySetter
+    public void setProperty(String name, Object value) {
+        if(properties == null) {
+            properties = new HashMap<>();
+        }
+        properties.put(name, value);
+    }
+
+    @JsonAnyGetter
+    public Map<String, Object> getProperties(){
+        return properties;
+    }
+
+    public Object getProperty(String name) {
+        if(properties == null) {
+            return null;
+        }
+        return properties.get(name);
+    }
+
+    public String toString() {
+        return new StringBuilder(1024)
+            .append(super.toString())
+            .append("\n")
+            .append("    properties=")
+            .append(properties)
+            .toString()
+        ;
     }
 
 }

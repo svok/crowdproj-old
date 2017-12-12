@@ -22,7 +22,7 @@ import com.crowdproj.common.models.CpSession;
 
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
-import com.crowdproj.common.events.AbstractEventInternal;
+//import com.crowdproj.common.events.AbstractEventInternal;
 import com.crowdproj.common.events.session.EventSessionOpened;
 import com.crowdproj.common.events.session.EventSessionClosed;
 import com.crowdproj.common.events.session.EventRequestToken;
@@ -30,6 +30,7 @@ import com.crowdproj.common.events.session.EventRegisterToken;
 import com.crowdproj.common.events.session.EventNewToken;
 import com.crowdproj.common.events.system.EventServerDefault;
 import com.crowdproj.common.events.system.EventError;
+import com.crowdproj.common.events.system.EventInternalDefault;
 
 import com.crowdproj.gateway.repositories.SessionRepository;
 import com.crowdproj.gateway.kafka.Sender;
@@ -112,7 +113,7 @@ public class WebSocketMessageBroker {
 
         String route = event.getRoute();
         if(route == null || route == "") {
-            sendToClient(new EventError("Event: " + event.getType() + " cannot be routed"));
+            sendToClient(new EventError().addError("Event: " + event.getType() + " cannot be routed"));
             return;
         }
 
@@ -150,19 +151,19 @@ public class WebSocketMessageBroker {
         case EventRegisterToken:
             try {
                 if(! EventRegisterToken.class.isInstance(event)) {
-                    sendToClient(new EventError("Event: " + event.getType() + " is wrong"));
+                    sendToClient(new EventError().addError("Event: " + event.getType() + " is wrong"));
                     return;
                 }
                 EventRegisterToken e = (EventRegisterToken) event;
                 String token = e.getToken();
                 if(token == null || token == "") {
-                    sendToClient(new EventError("Event: " + event.getType() + " has empty 'token' field"));
+                    sendToClient(new EventError().addError("Event: " + event.getType() + " has empty 'token' field"));
                     return;
                 }
                 cps = CpSession.parseToken(token);
                 return;
             } catch(IOException e) {
-                sendToClient(new EventError("Cannot register token: " + e.getMessage()));
+                sendToClient(new EventError().addError("Cannot register token: " + e.getMessage()));
                 LOG.error("Token registration error: {}", e);
             }
             break;
@@ -170,7 +171,7 @@ public class WebSocketMessageBroker {
             break;
         }
 
-        AbstractEventInternal ei = event.toInternalEvent(session.getId(), cps);
+        EventInternalDefault ei = event.toInternalEvent(session.getId(), cps);
         if(sender == null) {
             LOG.error("Sender is not initialized");
         } else {
@@ -179,7 +180,7 @@ public class WebSocketMessageBroker {
 
     }
 
-    public void onMessage(AbstractEventInternal ei) {
+    public void onMessage(EventInternalDefault ei) {
         LOG.info("WSB: Message from Kafka received: {}", ei);
         EventServerDefault es = new EventServerDefault();
         es.fromInternalEvent(ei);
