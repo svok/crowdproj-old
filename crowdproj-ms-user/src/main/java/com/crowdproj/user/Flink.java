@@ -11,8 +11,8 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer010;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer011;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.util.serialization.JSONDeserializationSchema;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -40,8 +40,6 @@ public class Flink {
         env.enableCheckpointing(5000);
 
         properties.setProperty("bootstrap.servers", "localhost:9092");
-        // only required for Kafka 0.8
-        // properties.setProperty("zookeeper.connect", "localhost:2181");
         properties.setProperty("group.id", topic);
 
     }
@@ -49,9 +47,9 @@ public class Flink {
     public void run() throws Exception {
 
         DataStream<String> stream = env
-            .addSource(new FlinkKafkaConsumer010<>(topic, new SimpleStringSchema(), properties));
+            .addSource(new FlinkKafkaConsumer011<>(topic, new SimpleStringSchema(), properties));
 
-        FlinkKafkaProducer010.FlinkKafkaProducer010Configuration producerConfig = FlinkKafkaProducer010.writeToKafkaWithTimestamps(
+        FlinkKafkaProducer011.FlinkKafkaProducer011Configuration producerConfig = FlinkKafkaProducer011.writeToKafkaWithTimestamps(
             stream,                   // input stream
             "gateway",                // target topic
             new SimpleStringSchema(), // serialization schema
@@ -63,6 +61,6 @@ public class Flink {
 //        myProducerConfig.setFlushOnCheckpoint(true);  // "false" by default
 //        */
 
-        env.execute("Flink Streaming echo microservice");
+        env.execute("User management microservice");
     }
 }

@@ -21,10 +21,22 @@ allprojects {
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
     }
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
 }
 
 group = 'com.crowdproj'
 version = '0.0.1-SNAPSHOT'
+
+ext {
+    // versions
+    flinkVersion = "1.3.+"
+    kafkaVersion = "0.10"
+}
+
 
 subprojects {
     apply plugin: 'java'
@@ -34,11 +46,6 @@ subprojects {
 
     group = rootProject.group
     version = rootProject.version
-
-    // versions
-    def flinkVersion = "1.3.+"
-    def kafkaVersion = "1.0.+"
-
 
     jar {
         destinationDir = new File(rootProject.projectDir, "/libs")
@@ -57,7 +64,7 @@ subprojects {
     dependencies {
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.+'
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.+'
-        compile group: 'org.apache.kafka', name: 'kafka-clients', version: '0.10.+'
+        compile group: 'org.apache.kafka', name: 'kafka-clients', version: "${rootProject.ext.kafkaVersion}.+"
 
         compile "org.slf4j:slf4j-api:1.7.+"
 
