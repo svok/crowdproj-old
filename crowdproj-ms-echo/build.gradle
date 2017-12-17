@@ -20,6 +20,7 @@ configurations {
 
 dependencies {
     compile project(':crowdproj-common')
+    compile project(':crowdproj-ms-common')
 
     // flink
     compile "org.apache.flink:flink-java:$rootProject.ext.flinkVersion"

@@ -5,6 +5,7 @@ include 'services:webservice'
 */
 include 'crowdproj-common'
 include 'crowdproj-gateway'
+include 'crowdproj-ms-common'
 include 'crowdproj-ms-echo'
 //include 'crowdproj-ms-user'
 

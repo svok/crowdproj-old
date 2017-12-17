@@ -1,4 +1,4 @@
-package com.crowdproj.echo.kafka;
+package com.crowdproj.common.kafka;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 

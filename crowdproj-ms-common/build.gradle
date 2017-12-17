@@ -1,0 +1,16 @@
+apply plugin: 'java'
+
+description = "Library of components common for all microservices"
+
+dependencies {
+    // flink
+    compile "org.apache.flink:flink-java:$rootProject.ext.flinkVersion"
+    compile "org.apache.flink:flink-clients_2.11:$rootProject.ext.flinkVersion"
+    compile "org.apache.flink:flink-streaming-java_2.11:$rootProject.ext.flinkVersion"
+    compile "org.apache.flink:flink-cep_2.11:$rootProject.ext.flinkVersion"
+    compile "org.apache.flink:flink-connector-kafka-${rootProject.ext.kafkaVersion}_2.11:$rootProject.ext.flinkVersion"
+
+    // test framework
+    testCompile "org.apache.flink:flink-test-utils_2.11:$rootProject.ext.flinkVersion"
+    testCompile "org.apache.flink:flink-streaming-java_2.11:$rootProject.ext.flinkVersion:tests"
+}

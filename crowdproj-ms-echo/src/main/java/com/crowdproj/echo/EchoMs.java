@@ -15,8 +15,8 @@ import com.crowdproj.common.events.AbstractEventInternal;
 import com.crowdproj.common.events.system.EventInternalDefault;
 import com.crowdproj.common.events.echo.EventEcho;
 
-import com.crowdproj.echo.kafka.KafkaInterface;
-import com.crowdproj.echo.kafka.Kafka010;
+import com.crowdproj.common.kafka.KafkaInterface;
+import com.crowdproj.common.kafka.Kafka010;
 
 public class EchoMs {
 

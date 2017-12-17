@@ -1,4 +1,4 @@
-package com.crowdproj.echo.kafka;
+package com.crowdproj.common.kafka;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -16,10 +16,6 @@ import org.apache.flink.streaming.util.serialization.JSONDeserializationSchema;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 import org.apache.flink.api.common.functions.MapFunction;
-
-import com.crowdproj.common.events.AbstractEventInternal;
-import com.crowdproj.common.events.system.EventInternalDefault;
-import com.crowdproj.common.events.echo.EventEcho;
 
 public class Kafka010 implements KafkaInterface {
 
