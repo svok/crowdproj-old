@@ -1,11 +1,11 @@
-package com.crowdproj.user.nodes;
+package com.crowdproj.common.nodes;
 
 import com.crowdproj.common.events.AbstractEventInternal;
 import org.apache.flink.api.common.functions.MapFunction;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-class FromJson implements MapFunction<String, AbstractEventInternal> {
+public class FromJson implements MapFunction<String, AbstractEventInternal> {
 
     final ObjectMapper mapper = new ObjectMapper();
 

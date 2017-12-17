@@ -55,8 +55,13 @@ public class EventError extends AbstractEventServer {
         return addError(error);
     }
 
-    public void fromInternalEvent(EventInternalDefault event) {
-        this.setErrors(event.getErrors());
+    public void fromInternalEvent(AbstractEventInternal event) {
+        if(event instanceof EventErrorInternal) {
+            this.setErrors(((EventErrorInternal)event).getErrors());
+        } else {
+            throw new IllegalArgumentException("EventError must be created from EventErrorInternal. "
+                + "Other subclasses of AbstractEventInternal are not allowed.");
+        }
     }
 
     public String toString() {

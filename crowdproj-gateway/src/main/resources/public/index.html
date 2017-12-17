@@ -41,25 +41,16 @@ $(document).ready(function() {
         console.log("message received", event);
         var mess = JSON.parse(event.data);
         var json = {
-            "type": "echo.echo",
-            "payload": {
-                "user": {
-                    "id": "1234",
-                    "email": "point@point.po"
-                },
-                "point": "one",
-                "manyPoints": [1,2,3],
-                "Object": {
-                    "this":"is"
-                }
-            }
+            "type": "user.signin",
+            "identity":"test-user",
+            "password":"test-pass"
         };
         switch(mess.type) {
         case "session.new-token":
             console.log("new token received", mess.token);
             sock.send(JSON.stringify(json));
             break;
-        case "echo.echo":
+        case "user.singin":
             break;
         default:
             console.log("other message", event.data);

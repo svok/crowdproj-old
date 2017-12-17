@@ -2,32 +2,31 @@ apply plugin: 'application'
 
 description = "User microservice"
 
-def flinkVersion = "1.4.+"
-mainClassName = 'com.crowdproj.echo.EchoMs'
+mainClassName = 'com.crowdproj.user.UserMs'
 
 dependencies {
     compile project(':crowdproj-common')
-
-    // flink
-    compile "org.apache.flink:flink-java:$flinkVersion"
-    compile "org.apache.flink:flink-clients_2.11:$flinkVersion"
-    compile "org.apache.flink:flink-streaming-java_2.11:$flinkVersion"
-    compile "org.apache.flink:flink-cep_2.11:$flinkVersion"
-    compile "org.apache.flink:flink-connector-kafka-0.11_2.11:$flinkVersion"
+    compile project(':crowdproj-ms-common')
 
     // shiro
     // compile "org.apache.shiro:shiro-core:1.4.+"
 
+    // flink
+    compile "org.apache.flink:flink-java:$rootProject.ext.flinkVersion"
+    compile "org.apache.flink:flink-clients_2.11:$rootProject.ext.flinkVersion"
+    compile "org.apache.flink:flink-streaming-java_2.11:$rootProject.ext.flinkVersion"
+    compile "org.apache.flink:flink-cep_2.11:$rootProject.ext.flinkVersion"
+    compile "org.apache.flink:flink-connector-kafka-${rootProject.ext.kafkaVersion}_2.11:$rootProject.ext.flinkVersion"
 
     // test framework
-    testCompile "org.apache.flink:flink-test-utils_2.11:$flinkVersion"
-    testCompile "org.apache.flink:flink-streaming-java_2.11:$flinkVersion:tests"
+    testCompile "org.apache.flink:flink-test-utils_2.11:$rootProject.ext.flinkVersion"
+    testCompile "org.apache.flink:flink-streaming-java_2.11:$rootProject.ext.flinkVersion:tests"
 
 }
 
 jar {
     manifest {
-        attributes 'Main-Class' : 'com.crowdproj.echo.EchoMs'
+        attributes 'Main-Class' : 'com.crowdproj.user.UserMs'
     }
     from configurations.runtime.collect { zipTree(it) }
 }

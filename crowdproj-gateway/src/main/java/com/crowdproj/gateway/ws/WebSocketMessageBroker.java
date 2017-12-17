@@ -22,7 +22,7 @@ import com.crowdproj.common.models.CpSession;
 
 import com.crowdproj.common.events.AbstractEventClient;
 import com.crowdproj.common.events.AbstractEventServer;
-//import com.crowdproj.common.events.AbstractEventInternal;
+import com.crowdproj.common.events.AbstractEventInternal;
 import com.crowdproj.common.events.session.EventSessionOpened;
 import com.crowdproj.common.events.session.EventSessionClosed;
 import com.crowdproj.common.events.session.EventRequestToken;
@@ -180,7 +180,7 @@ public class WebSocketMessageBroker {
 
     }
 
-    public void onMessage(EventInternalDefault ei) {
+    public void onMessage(AbstractEventInternal ei) {
         LOG.info("WSB: Message from Kafka received: {}", ei);
         EventServerDefault es = new EventServerDefault();
         es.fromInternalEvent(ei);

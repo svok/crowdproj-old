@@ -22,6 +22,9 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.crowdproj.common.models.CpSession;
 import com.crowdproj.common.models.Error;
 
+import com.crowdproj.common.exceptions.WrongObjectException;
+import java.lang.reflect.InvocationTargetException;
+
 @JsonInclude(Include.NON_NULL)
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CUSTOM,
@@ -32,8 +35,8 @@ import com.crowdproj.common.models.Error;
 @JsonTypeIdResolver(EventTypeIdResolver.class)
 abstract public class AbstractEventInternal extends AbstractEvent {
 
-    protected final String id;
-    protected final Long tsCreated;
+    protected String id;
+    protected Long tsCreated;
     protected String wsSessionId;
     protected CpSession cpSession;
     protected Map<String, Object> statuses = null;
@@ -43,6 +46,12 @@ abstract public class AbstractEventInternal extends AbstractEvent {
         super();
         id = UUID.randomUUID().toString();
         tsCreated = System.currentTimeMillis();
+    }
+
+    public AbstractEventInternal(String id, Long tsCreated) {
+        super();
+        this.id = id;
+        this.tsCreated = tsCreated;
     }
 
     @JsonCreator
@@ -73,9 +82,19 @@ abstract public class AbstractEventInternal extends AbstractEvent {
         return id;
     }
 
+    public AbstractEventInternal setId(String id) {
+        this.id = id;
+        return this;
+    }
+
     // TsCreated
     public Long getTsCreated() {
         return tsCreated;
+    }
+
+    public AbstractEventInternal setTsCreated(Long tsCreated) {
+        this.tsCreated = tsCreated;
+        return this;
     }
 
     // wsSessionId
@@ -118,20 +137,27 @@ abstract public class AbstractEventInternal extends AbstractEvent {
         statuses.put(key, val);
     }
 
-    // Errors
-    public List<Error> getErrors() {
-        return errors;
-    }
-
-    public void setErrors(List<Error> errors) {
-        this.errors = errors;
-    }
-
-    public void addError(Error error) {
-        if(errors == null) {
-            errors = new ArrayList<Error>();
+    public AbstractEventInternal copy(Class<? extends AbstractEventInternal> clazz) {
+//        AbstractEventInternal newEvent = AbstractEventInternal.class.getConstructor(clazz, ).newInstance();
+        try {
+            AbstractEventInternal newEvent = clazz //AbstractEventInternal.class
+//                .asSubclass(AbstractEventInternal.class)
+                .getConstructor()
+                .newInstance();
+            newEvent.setId(getId());
+            newEvent.setTsCreated(getTsCreated());
+            newEvent.setWsSessionId(getWsSessionId());
+            newEvent.setCpSession(getCpSession());
+            return newEvent;
+        } catch(NoSuchMethodException em) {
+            throw new WrongObjectException("You cannot use class " + clazz.getSimpleName() + " to make a copy", em);
+        } catch(InstantiationException ei) {
+            throw new WrongObjectException("You cannot use class " + clazz.getSimpleName() + " to make a copy", ei);
+        } catch(IllegalAccessException ea) {
+            throw new WrongObjectException("You cannot use class " + clazz.getSimpleName() + " to make a copy", ea);
+        } catch(InvocationTargetException et) {
+            throw new WrongObjectException("You cannot use class " + clazz.getSimpleName() + " to make a copy", et);
         }
-        errors.add(error);
     }
 
     public String toString() {
@@ -152,9 +178,9 @@ abstract public class AbstractEventInternal extends AbstractEvent {
             .append("    statuses=")
             .append(statuses)
             .append("\n")
-            .append("    errors=")
-            .append(errors)
-            .append("\n")
+//            .append("    errors=")
+//            .append(errors)
+//            .append("\n")
         ;
 
         return sb.toString();

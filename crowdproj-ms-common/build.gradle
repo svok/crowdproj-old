@@ -3,6 +3,8 @@ apply plugin: 'java'
 description = "Library of components common for all microservices"
 
 dependencies {
+    compile project(':crowdproj-common')
+
     // flink
     compile "org.apache.flink:flink-java:$rootProject.ext.flinkVersion"
     compile "org.apache.flink:flink-clients_2.11:$rootProject.ext.flinkVersion"
