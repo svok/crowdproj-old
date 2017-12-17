@@ -24,7 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.crowdproj.common.events.system.EventInternalDefault;
 import com.crowdproj.common.events.AbstractEventInternal;
 
-//import com.crowdproj.common.events.echo.EventEcho;
+import com.crowdproj.common.kafka.KafkaInterface;
+import com.crowdproj.common.kafka.Kafka010;
 
 public class Flink {
 
@@ -34,27 +35,20 @@ public class Flink {
     final private ObjectMapper mapper = new ObjectMapper();
     final private Properties properties = new Properties();
 
-    final static public String topic = "user";
+    final static public String topicIn = "user";
+    final static public String groupId = "user";
+    final static public String topicOut = "gateway";
 
     public Flink() {
         env.enableCheckpointing(5000);
-
-        properties.setProperty("bootstrap.servers", "localhost:9092");
-        properties.setProperty("group.id", topic);
-
     }
 
     public void run() throws Exception {
 
-        DataStream<String> stream = env
-            .addSource(new FlinkKafkaConsumer011<>(topic, new SimpleStringSchema(), properties));
-
-        FlinkKafkaProducer011.FlinkKafkaProducer011Configuration producerConfig = FlinkKafkaProducer011.writeToKafkaWithTimestamps(
-            stream,                   // input stream
-            "gateway",                // target topic
-            new SimpleStringSchema(), // serialization schema
-            properties                // custom configuration for KafkaProducer (including broker list)
-        );
+        KafkaInterface kafka = new Kafka010(env);
+        kafka.setTopicIn();
+        DataStream<String> stream = kafka.kafkaSource(topicIn, groupId);
+        kafka.kafkaSink(responseStream, topicOut);
 
         // the following is necessary for at-least-once delivery guarantee
 //        myProducerConfig.setLogFailuresOnly(false);   // "false" by default

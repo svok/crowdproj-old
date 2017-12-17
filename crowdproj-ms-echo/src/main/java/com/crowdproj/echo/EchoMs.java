@@ -26,8 +26,7 @@ public class EchoMs {
         env.enableCheckpointing(5000);
 
         KafkaInterface kafka = new Kafka010(env);
-
-        DataStream<String> stream = kafka.kafkaSource();
+        DataStream<String> stream = kafka.kafkaSource("echo", "echo");
 
         DataStream<String> responseStream = stream
             .map(new FromJson())
@@ -35,7 +34,7 @@ public class EchoMs {
             .map(new ToJson())
         ;
 
-        kafka.kafkaSink(responseStream);
+        kafka.kafkaSink(responseStream, "gateway");
 
         // the following is necessary for at-least-once delivery guarantee
 //        myProducerConfig.setLogFailuresOnly(false);   // "false" by default

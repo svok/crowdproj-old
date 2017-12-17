@@ -19,7 +19,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 
 public class Kafka010 implements KafkaInterface {
 
-    StreamExecutionEnvironment env;
+    private StreamExecutionEnvironment env;
 
     public Kafka010(StreamExecutionEnvironment env) {
         setEnv(env);
@@ -30,24 +30,23 @@ public class Kafka010 implements KafkaInterface {
         return this;
     }
 
-    public DataStream<String> kafkaSource() {
+    public DataStream<String> kafkaSource(String topic, String groupId) {
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", "localhost:9092");
-        properties.setProperty("group.id", "echo");
+        properties.setProperty("group.id", groupId);
 
         return env
-            .addSource(new FlinkKafkaConsumer010<>("echo", new SimpleStringSchema(), properties));
+            .addSource(new FlinkKafkaConsumer010<>(topic, new SimpleStringSchema(), properties));
     }
 
-    public void kafkaSink(DataStream<String> stream) {
+    public void kafkaSink(DataStream<String> stream, String topic) {
 
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", "localhost:9092");
-        // properties.setProperty("group.id", "echo");
 
         FlinkKafkaProducer010Configuration producerConfig = FlinkKafkaProducer010.writeToKafkaWithTimestamps(
             stream,                   // input stream
-            "gateway",                // target topic
+            topic,                    // target topic
             new SimpleStringSchema(), // serialization schema
             properties                // custom configuration for KafkaProducer (including broker list)
         );

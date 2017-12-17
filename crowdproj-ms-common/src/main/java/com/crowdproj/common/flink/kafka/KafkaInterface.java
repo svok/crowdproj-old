@@ -7,7 +7,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 public interface KafkaInterface {
 
     public KafkaInterface setEnv(StreamExecutionEnvironment env);
-    public DataStream<String> kafkaSource();
-    public void kafkaSink(DataStream<String> stream);
+    public DataStream<String> kafkaSource(String topic, String groupId);
+    public void kafkaSink(DataStream<String> stream, String topic);
 
 }
