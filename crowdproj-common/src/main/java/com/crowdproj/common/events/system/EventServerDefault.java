@@ -60,11 +60,12 @@ public class EventServerDefault extends AbstractEventServer {
 
     public String toString() {
         return super.toString()
-            + properties
-            .entrySet()
-            .stream()
-            .map(set -> "    prop["+set.getKey()+"]=\"" + set.getValue().toString() + "\"\n")
-            .collect(Collectors.joining(""))
+            + (properties == null ? "null\n" : properties
+                .entrySet()
+                .stream()
+                .map(set -> "    prop["+set.getKey()+"]=\"" + set.getValue().toString() + "\"\n")
+                .collect(Collectors.joining(""))
+            )
         ;
     }
 

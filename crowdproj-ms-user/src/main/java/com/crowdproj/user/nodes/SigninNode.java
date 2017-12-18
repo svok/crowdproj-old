@@ -1,5 +1,8 @@
 package com.crowdproj.user.nodes;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.crowdproj.common.events.AbstractEventInternal;
 import com.crowdproj.common.events.system.EventErrorInternal;
 import com.crowdproj.common.events.user.EventSignin;
@@ -10,6 +13,8 @@ import org.apache.flink.api.common.functions.MapFunction;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SigninNode implements MapFunction<AbstractEventInternal, AbstractEventInternal> {
+
+    private static final Logger log = LoggerFactory.getLogger(SigninNode.class);
 
     @Override
     public AbstractEventInternal map(AbstractEventInternal eventIn) throws Exception {

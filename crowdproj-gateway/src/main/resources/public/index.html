@@ -45,10 +45,18 @@ $(document).ready(function() {
             "identity":"test-user",
             "password":"test-pass"
         };
+        var json1 = {
+            "type": "user.signup",
+            "contact":"user@site.dom"
+        };
         switch(mess.type) {
         case "session.new-token":
             console.log("new token received", mess.token);
             sock.send(JSON.stringify(json));
+            break;
+        case "user.user-info":
+            console.log("user-info received", mess);
+            sock.send(JSON.stringify(json1));
             break;
         case "user.singin":
             break;

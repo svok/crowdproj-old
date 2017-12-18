@@ -109,7 +109,7 @@ abstract public class AbstractEvent {
 
     public String toString() {
         return getClass().getName() + ": \n"
-            + "    type=" + (type_id == null ? "null" : "\""+type_id+"\"") + "\n"
+            + "    type=" + getType() + "\n"
         ;
     }
 

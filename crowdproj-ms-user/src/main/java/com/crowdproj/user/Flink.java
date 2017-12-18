@@ -18,8 +18,9 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.collector.selector.OutputSelector;
 
-import com.crowdproj.common.events.system.EventInternalDefault;
 import com.crowdproj.common.events.AbstractEventInternal;
+import com.crowdproj.common.events.system.EventInternalDefault;
+import com.crowdproj.common.events.user.EventSender;
 
 import com.crowdproj.common.kafka.KafkaInterface;
 import com.crowdproj.common.kafka.Kafka010;
@@ -37,6 +38,7 @@ public class Flink {
 
     final static public String topicIn = "user";
     final static public String groupId = "user";
+    final static public String topicSender = "sender";
     final static public String topicOut = "gateway";
 
     public Flink() {
@@ -48,7 +50,7 @@ public class Flink {
         KafkaInterface kafka = new Kafka010(env);
         DataStream<String> stream = kafka.kafkaSource(topicIn, groupId);
 
-        SplitStream<AbstractEventInternal> split = stream.map(new FromJson()).split(new OutputSelector<AbstractEventInternal>() {
+        SplitStream<AbstractEventInternal> splitByType = stream.map(new FromJson()).split(new OutputSelector<AbstractEventInternal>() {
             @Override
             public Iterable<String> select(AbstractEventInternal value) {
                 List<String> output = new ArrayList<String>();
@@ -63,13 +65,29 @@ public class Flink {
             }
         });
 
-        DataStream<AbstractEventInternal> signin = split.select("user.signin").map(new SigninNode());
-        DataStream<AbstractEventInternal> signup = split.select("user.signup");
-        DataStream<AbstractEventInternal> unknown = split.select("unknown");
+        DataStream<AbstractEventInternal> signin = splitByType.select("user.signin").map(new SigninNode());
+        DataStream<AbstractEventInternal> signup = splitByType.select("user.signup").flatMap(new SignupNode());
+        DataStream<AbstractEventInternal> unknown = splitByType.select("unknown");
 
         DataStream<AbstractEventInternal> union = unknown.union(signin, signup);
-        DataStream<String> responseStream = union.map(new ToJson());
+        SplitStream<AbstractEventInternal> splitByTopic = union.split(new OutputSelector<AbstractEventInternal>() {
+            @Override
+            public Iterable<String> select(AbstractEventInternal value) {
+                List<String> output = new ArrayList<String>();
+                if(value instanceof EventSender) {
+                    output.add("sender");
+                } else {
+                    output.add("gateway");
+                }
+                return output;
+            }
+        });
 
+
+        DataStream<String> senderStream = splitByTopic.select("sender").map(new ToJson());
+        DataStream<String> responseStream = splitByTopic.select("gateway").map(new ToJson());
+
+        kafka.kafkaSink(senderStream, topicSender);
         kafka.kafkaSink(responseStream, topicOut);
 
         // the following is necessary for at-least-once delivery guarantee
