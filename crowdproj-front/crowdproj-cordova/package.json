@@ -1,0 +1,26 @@
+{
+    "name": "com.crowdproj.app",
+    "displayName": "CrowdProj",
+    "version": "1.0.0",
+    "description": "A sample Apache Cordova application that responds to the deviceready event.",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "buildPackagesDev": "cordova build"
+    },
+    "author": "Sergey Okatov",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "cordova": "*",
+        "cordova-android": "*",
+        "cordova-plugin-whitelist": "*"
+    },
+    "cordova": {
+        "plugins": {
+            "cordova-plugin-whitelist": {}
+        },
+        "platforms": [
+            "android"
+        ]
+    }
+}

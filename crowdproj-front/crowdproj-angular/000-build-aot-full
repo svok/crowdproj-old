@@ -1,0 +1,22 @@
+#!/bin/bash
+
+for loc in en de ru
+do
+    if [ $loc = 'en' ]
+    then
+        ng build --aot \
+            --env dev \
+            --base-href /a/ \
+            --output-path ./dist/$loc \
+            --locale $loc
+    else
+        ng build --aot \
+            --env dev \
+            --base-href /a/ \
+            --output-path ./dist/$loc \
+            --i18n-file src/i18n/messages.$loc.xlf \
+            --locale $loc
+    fi
+done
+
+#ng build --output-path cordova/www/

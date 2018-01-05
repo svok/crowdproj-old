@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd cordova
+if [ ! -d www ]
+then
+    mkdir www
+fi
+cordova build

@@ -3,11 +3,14 @@
 include 'api'
 include 'services:webservice'
 */
-include 'crowdproj-common'
-include 'crowdproj-gateway'
-include 'crowdproj-ms-common'
-include 'crowdproj-ms-echo'
-include 'crowdproj-ms-user'
+include 'crowdproj-back:crowdproj-common'
+include 'crowdproj-back:crowdproj-gateway'
+include 'crowdproj-back:crowdproj-ms-common'
+include 'crowdproj-back:crowdproj-ms-echo'
+include 'crowdproj-back:crowdproj-ms-user'
+
+include 'crowdproj-front:crowdproj-angular'
+include 'crowdproj-front:crowdproj-cordova'
 
 rootProject.name = 'crowdproj'
 //rootProject.children.each {project ->

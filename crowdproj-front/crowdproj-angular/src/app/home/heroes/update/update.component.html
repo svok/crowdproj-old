@@ -1,0 +1,26 @@
+<div class="container">
+    <h1>Hero Form</h1>
+    <form (ngSubmit)="onSubmit()" #heroForm="ngForm" *ngIf="hero">
+    <div class="form-group row">
+      <label for="signupemail" class="col-2 col-form-label" i18n>E-mail</label>
+      <div class="col-10">
+        <input
+            class="form-control"
+            placeholder="Name"
+            [(ngModel)]="hero.name"
+            name="name"
+            #heroname="ngModel"
+            required
+            pattern="^[a-zA-Zа-яА-Я- ]+$"
+        >
+        <small *ngIf="heroname.errors && (heroname.dirty || heroname.touched)" class="form-text text-muted alert alert-danger">
+            <div [hidden]="!heroname.errors.required">Вы должны заполнить это поле</div>
+            <div [hidden]="!heroname.errors.pattern">Имя должно содержать только буквы, знаки "-" и пробелы</div>
+        </small>
+      </div>
+    </div>
+
+      <button type="submit" class="btn btn-success" [disabled]="!heroForm.form.valid">Submit</button>
+
+    </form>
+</div>

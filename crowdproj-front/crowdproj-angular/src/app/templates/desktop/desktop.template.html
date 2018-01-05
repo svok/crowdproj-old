@@ -1,0 +1,35 @@
+<div class="wrap">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" *ngIf="authService.isLoggedIn">
+  <a class="navbar-brand" routerLink="/">CrowdProj</a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" aria-controls="appNavigation" [attr.aria-expanded]="!isCollapsed" aria-label="Toggle navigation" (click)="toggleMenu()">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="appNavigation" [ngbCollapse]="isCollapsed">
+
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a class="nav-link" routerLink="/heroes" routerLinkActive="active" i18n-title i18n title="Tour of Heroes">Heroes</a>
+        </li>
+    </ul>
+    <ul class="navbar-nav ml-auto ">
+        <li class="nav-item">
+            <a class="nav-link" routerLink="/user" routerLinkActive="active" i18n-title="@@profile-title" title="All personal information">{{authService.user.getName()}}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" routerLink="/user/signout" routerLinkActive="active" i18n-title="@@signout-title" title="Close current user session" i18n>Sign out</a>
+        </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+    <div class="btn-group btn-breadcrumb">
+        <ng-template ngFor let-i="index" let-breadcrumb [ngForOf]="breadcrumbs">
+        <a class="btn btn-success" [class.disabled]="i == (breadcrumbs.length - 1)" [routerLink]="[breadcrumb.url]">{{breadcrumb.name}}</a>
+        </ng-template>
+    </div>
+
+    <router-outlet></router-outlet>
+</div>
+</div>

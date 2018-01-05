@@ -1,0 +1,13 @@
+<!--h1>
+  {{title}}
+</h1-->
+
+<h2>Messages</h2>
+<ul class="mssages" *ngIf="messageService.messages">
+    <li *ngFor="let message of messageService.messages">
+        <span class="badge">{{message.id}}</span>
+        <a routerLink="/message/{{message.id}}">{{message.title}}</a>
+        <button class="delete" (click)="delete(message); $event.stopPropagation()">x</button>
+        <div>{{message.text}}</div>
+    </li>
+</ul>

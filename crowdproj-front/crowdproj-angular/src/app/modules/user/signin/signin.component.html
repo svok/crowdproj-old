@@ -1,0 +1,53 @@
+<div class="card card-container">
+
+    <img id="profile-img"
+        class="profile-img-card"
+        src="assets/img/profile.png"
+    />
+    <p i18n="@@signin-request-message" *ngIf="isRequesting">Trying to sign in</p>
+
+<form (ngSubmit)="login()" #loginForm="ngForm">
+    <div class="form-group row">
+      <!--label for="loginemail" class="col-2 col-form-label" i18n>E-mail</label-->
+      <div class="col">
+        <input
+            class="form-control"
+            type="email"
+            i18n-placeholder
+            placeholder="E-mail"
+            [(ngModel)]="loginDat.email"
+            name="email"
+            #loginlogin="ngModel"
+            required
+            pattern="^(([^<>()\[\]\\.,;:\s@]+(\.[^<>()\[\]\\.,;:\s@]+)*))@((([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$"
+        >
+        <small *ngIf="loginlogin.errors && (loginlogin.dirty || loginlogin.touched)" class="form-text text-muted alert alert-danger">
+            <div [hidden]="!loginlogin.errors.required" i18n="@@email-valid-empty">E-mail cannot be empty</div>
+            <div [hidden]="!loginlogin.errors.pattern" i18n="@@email-valid-pattern">E-mail must look like your_name@example.com</div>
+        </small>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <!--label for="loginpassword" class="col-2 col-form-label" i18n>Password</label-->
+      <div class="col">
+        <input
+            class="form-control"
+            type="password"
+            i18n-placeholder
+            placeholder="Password"
+            [(ngModel)]="loginDat.password"
+            name="password"
+            #loginpassword="ngModel"
+            required
+            pattern="^(?=.*[a-zа-я])(?=.*[A-ZА-Я])(?=.*\d).{6,}$"
+        >
+        <small *ngIf="loginpassword.errors && (loginpassword.dirty || loginpassword.touched)" class="form-text text-muted alert alert-danger">
+            <div [hidden]="!loginpassword.errors.required" i18n="@@password-valid-empty">You must type in password</div>
+            <div [hidden]="!loginpassword.errors.pattern" i18n="@@password-valid-pattern">Password must contain both capital and lowercase letters as well as digits with the size no less then 6 symbols</div>
+        </small>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-lg btn-primary btn-block btn-signin" [disabled]="!loginForm.form.valid" i18n>Sign in</button>
+</form>
+</div>

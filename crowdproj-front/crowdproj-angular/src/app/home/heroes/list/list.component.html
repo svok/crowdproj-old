@@ -1,0 +1,10 @@
+<h2>My Heroes</h2>
+<ul class="heroes" *ngIf="heroes">
+    <li *ngFor="let hero of heroes">
+        <span class="badge">{{hero.id}}</span>
+        <a routerLink="./{{hero.id}}">{{hero.name}}</a>
+        <button class="delete" (click)="delete(hero); $event.stopPropagation()">x</button>
+    </li>
+</ul>
+
+<a routerLink="./create" class="btn">Add a hero</a>

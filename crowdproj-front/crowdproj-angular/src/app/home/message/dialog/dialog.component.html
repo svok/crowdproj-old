@@ -1,0 +1,41 @@
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title" i18n>Messages</h4>
+    <button type="button" class="close" i18n-aria-label aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+
+    <a routerLink="/message" i18n="all messages">All</a>
+    <ul class="messages" *ngIf="messageService.messages">
+        <li *ngFor="let message of messageService.messages">
+            <span class="badge">{{message.id}}</span>
+            <a routerLink="/message/{{message.id}}">{{message.title}}</a>
+            <button class="delete" (click)="delete(message.id); $event.stopPropagation()">x</button>
+        </li>
+    </ul>
+
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="c('Close click')" i18n>Close</button>
+  </div>
+</ng-template>
+
+<!-- button class="btn btn-lg btn-outline-primary" (click)="open(content)">Launch demo modal</button -->
+
+<!--h2 md-dialog-title>Dialog</h2-->
+<!-- md-dialog-content (click)="dialogRef.close()">
+    <a routerLink="/message">Все</a>
+    <ul class="messages" *ngIf="messages">
+        <li *ngFor="let message of messages">
+            <span class="badge">{{message.id}}</span>
+            <a routerLink="/message/{{message.id}}">{{message.title}}</a>
+            <button class="delete" (click)="delete(message.id); $event.stopPropagation()">x</button>
+        </li>
+    </ul>
+</md-dialog-content>
+<md-dialog-actions>
+    <button md-button md-dialog-close="Закрыть">Закрыть</button>
+</md-dialog-actions -->

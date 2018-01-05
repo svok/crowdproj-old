@@ -1,0 +1,11 @@
+#!/bin/bash
+
+ng build \
+    --env mobile-dev \
+    --base-href /a/ \
+    --output-path ./dist/jit/
+
+#    --no-aot \
+
+
+#ng build --output-path cordova/www/

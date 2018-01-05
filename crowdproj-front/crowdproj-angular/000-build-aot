@@ -1,0 +1,13 @@
+#!/bin/bash
+
+for loc in ru
+do
+    ng build --aot \
+        --env dev \
+        --base-href /a/ \
+        --output-path ./dist/$loc \
+        --i18n-file src/i18n/messages.$loc.xlf \
+        --locale $loc
+done
+
+#ng build --output-path cordova/www/

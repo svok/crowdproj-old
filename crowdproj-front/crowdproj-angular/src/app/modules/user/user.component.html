@@ -1,0 +1,11 @@
+<h2 i18n *ngIf="!authService.isLoggedIn">Welcome to CrowdProj!</h2>
+
+<ul class="nav nav-tabs" *ngIf="!authService.isLoggedIn">
+  <li class="nav-item">
+    <a class="nav-link" routerLink="/user/signin" routerLinkActive="active" i18n>Sign in</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" routerLink="/user/signup" routerLinkActive="active" i18n>Sign up</a>
+  </li>
+</ul>
+<router-outlet></router-outlet>

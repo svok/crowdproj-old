@@ -1,0 +1,36 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.+'
+    }
+    repositories {
+        mavenCentral()
+        maven { url 'https://repo.spring.io/libs-snapshot' }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
+}
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+description = "Gateway betweeen websocket clients and microservices"
+
+dependencies {
+    compile project(':crowdproj-back:crowdproj-common')
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter')
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-websocket') {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+    compile("org.springframework.boot:spring-boot-starter-web") {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+
+    compile "org.springframework.kafka:spring-kafka:+"
+
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
+    testCompile "org.springframework.kafka:spring-kafka-test:+"
+
+    bootJar.destinationDir = jar.destinationDir
+}

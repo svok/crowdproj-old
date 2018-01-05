@@ -1,0 +1,147 @@
+<div class="card card-container">
+<p i18n="@@signup-request-message" *ngIf="isRequesting">Trying to sign up</p>
+
+<div class="signup-success" *ngIf="isRegistered">
+    <div i18n="@@signup-success-message">
+
+    <p>Congratulations! You have been successfully signed up at the CrowdProj portal.</p>
+
+    <p>Please check your email: <b>{{signupDat.email}}</b> for further
+    instructions. You should confirm your email address within 24 hours.
+    After that your profile will be available for use.</p>
+
+    </div>
+
+    <button class="btn btn-success" i18n="@@got-it" (click)="gotIt()">Got it!</button>
+</div>
+
+<form (ngSubmit)="signup()" #signupForm="ngForm" *ngIf="!isRegistered">
+    <div class="form-group row">
+      <label for="signupemail" class="col-2 col-form-label" i18n>E-mail</label>
+      <div class="col-10">
+        <input
+            class="form-control"
+            type="email"
+            i18n-placeholder
+            placeholder="E-mail"
+            [(ngModel)]="signupDat.email"
+            name="email"
+            #signupEmail="ngModel"
+            required
+            pattern="^(([^<>()\[\]\\.,;:\s@]+(\.[^<>()\[\]\\.,;:\s@]+)*))@((([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$"
+        >
+        <small *ngIf="signupEmail.errors && (signupEmail.dirty || signupEmail.touched)" class="form-text text-muted alert alert-danger">
+            <div [hidden]="!signupEmail.errors.required" i18n="@@email-valid-empty">E-mail cannot be empty</div>
+            <div [hidden]="!signupEmail.errors.pattern" i18n="@@email-valid-pattern">E-mail must look like your_name@example.com</div>
+        </small>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="signupFname" class="col-2 col-form-label" i18n="@@first-name">First Name</label>
+      <div class="col-10">
+        <input
+            class="form-control"
+            type="text"
+            i18n-placeholder="@@first-name"
+            placeholder="First Name"
+            [(ngModel)]="signupDat.fname"
+            name="fname"
+            #signupFname="ngModel"
+            required
+            pattern="^\w+$"
+        >
+        <small *ngIf="signupFname.errors && (signupFname.dirty || signupFname.touched)" class="form-text text-muted alert alert-danger">
+            <div [hidden]="!signupFname.errors.required" i18n="@@fname-valid-empty">Fill in your first name</div>
+            <div [hidden]="!signupFname.errors.pattern" i18n="@@fname-valid-pattern">Name must contain only letters</div>
+        </small>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="signupMname" class="col-2 col-form-label" i18n="@@middle-name">Middle Name</label>
+      <div class="col-10">
+        <input
+            class="form-control"
+            type="text"
+            i18n-placeholder="@@middle-name"
+            placeholder="Отчество"
+            [(ngModel)]="signupDat.mname"
+            name="mname"
+            #signupMname="ngModel"
+            pattern="^\w+$"
+        >
+        <small *ngIf="signupMname.errors && (signupMname.dirty || signupMname.touched)" class="form-text text-muted alert alert-danger">
+            <div [hidden]="!signupMname.errors.pattern" i18n="@@mname-valid-pattern">Middle name must contain only letters</div>
+        </small>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="signupLname" class="col-2 col-form-label" i18n="@@last-name">Last Name</label>
+      <div class="col-10">
+        <input
+            class="form-control"
+            type="text"
+            i18n-placeholder="@@last-name"
+            placeholder="Last Name"
+            [(ngModel)]="signupDat.lname"
+            name="lname"
+            #signupLname="ngModel"
+            required
+            pattern="^\w+$"
+        >
+
+        <small *ngIf="signupLname.errors && (signupLname.dirty || signupLname.touched)" class="form-text text-muted alert alert-danger">
+            <div [hidden]="!signupLname.errors.required" i18n="@@mname-valid-empty">Fill in your family name</div>
+            <div [hidden]="!signupLname.errors.pattern" i18n="@@mname-valid-pattern">Last name must contain only letters</div>
+        </small>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="signupPassword" class="col-2 col-form-label" i18n>Password</label>
+      <div class="col-10">
+        <input
+            class="form-control"
+            type="password"
+            i18n-placeholder
+            placeholder="Password"
+            [(ngModel)]="signupDat.password"
+            name="password"
+            #signupPassword="ngModel"
+            required
+            pattern="^(?=.*[a-zа-я])(?=.*[A-ZА-Я])(?=.*\d).{6,}$"
+        >
+        <small *ngIf="signupPassword.errors && (signupPassword.dirty || signupPassword.touched)" class="form-text text-muted alert alert-danger">
+            <div [hidden]="!signupPassword.errors.required" i18n="@@password-valid-empty">You must type in password</div>
+            <div [hidden]="!signupPassword.errors.pattern" i18n="@@password-valid-pattern">Password must contain both capital and lowercase letters as well as digits with the size no less then 6 symbols</div>
+        </small>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="signupPassword1" class="col-2 col-form-label" i18n="@@password-repeat">Verify Password</label>
+      <div class="col-10">
+        <input
+            class="form-control"
+            type="password"
+            i18n-placeholder="@@password-repeat"
+            placeholder="Verify Password"
+            [(ngModel)]="signupDat.password1"
+            name="password1"
+            #signupPassword1="ngModel"
+            required
+            pattern="^(?=.*[a-zа-я])(?=.*[A-ZА-Я])(?=.*\d).{6,}$"
+        >
+
+        <small *ngIf="signupPassword1.errors && (signupPassword1.dirty || signupPassword1.touched)" class="form-text text-muted alert alert-danger">
+            <div [hidden]="!signupPassword1.errors.required" i18n="@@password1-valid-empty">Type password once again</div>
+            <div [hidden]="!signupPassword1.errors.pattern" i18n="@@password-valid-pattern">Password must contain both capital and lowercase letters as well as digits with the size no less then 6 symbols</div>
+            <div [hidden]="!signupPassword1.errors.pattern" i18n="@@password1-valid-differs">Passwords differ</div>
+        </small>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-success" [disabled]="!signupForm.form.valid" i18n>Sign up</button>
+</form>
+</div>

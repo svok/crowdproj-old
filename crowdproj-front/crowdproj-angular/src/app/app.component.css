@@ -1,0 +1,89 @@
+h1 {
+  font-size: 1.2em;
+  color: #999;
+  margin-bottom: 0;
+}
+h2 {
+  font-size: 2em;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.footer-toolbar,
+.header-toolbar {
+    position: fixed;
+    z-index: 999;
+}
+
+.portrait .header-toolbar {
+    width: 100%;
+    height: 56px;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+}
+.portrait .footer-toolbar {
+    width: 100%;
+    height: 56px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+.portrait .app-content {
+    width: 100%;
+    padding-top: 56px;
+    padding-bottom: 56px;
+}
+
+.portrait .app-sidenav {
+    top: 56px;
+    bottom: 56px;
+    left: 0;
+    height: calc(100% - 112px);
+}
+
+.landscape .header-toolbar {
+    height: 100%;
+    width: 56px;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+}
+.landscape .footer-toolbar {
+    height: 100%;
+    width: 56px;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+}
+.landscape .app-content {
+    width: calc(100% - 128px);
+    overflow: hidden;
+    padding-left: 56px;
+    padding-right: 56px;
+}
+
+.landscape .header-toolbar >>> .mat-toolbar-row,
+.landscape .footer-toolbar >>> .mat-toolbar-row {
+    flex-direction: column !important;
+}
+
+.landscape .rotatable {
+    transform: rotate(-90deg) translateX(-50%);
+//    transform: rotate(180deg);
+//    writing-mode: vertical-rl;
+//    width: auto;
+//    max-width: 56px;
+//    height: auto;
+}
+
+.landscape .app-sidenav {
+    left: 56px;
+    height: 100%;
+}
+
+.landscape .title {
+    min-height: 120px;
+    max-height: 300px;
+    text-align: right;
+}
