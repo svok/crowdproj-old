@@ -7,7 +7,7 @@
     "start": "ng serve",
     "build": "ng build",
     "buildMobileDev": "ng build --env mobile-dev --base-href /a/ --output-path ../crowdproj-cordova/www/",
-    "buildWebDev": "ng build --aot --env dev --base-href /a/ --output-path ../../dist/ru --i18n-file src/i18n/messages.ru.xlf --locale ru",
+    "buildWebDev": "node --max_old_space_size=2048 ./node_modules/.bin/ng build --aot --env dev --base-href /a/ --output-path ../../dist/ru --i18n-file src/i18n/messages.ru.xlf --locale ru",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",

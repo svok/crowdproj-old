@@ -12,7 +12,7 @@
     "license": "Apache-2.0",
     "dependencies": {
         "cordova": "*",
-        "cordova-android": "*",
+        "cordova-android": "^7.0.0",
         "cordova-plugin-whitelist": "*"
     },
     "cordova": {
