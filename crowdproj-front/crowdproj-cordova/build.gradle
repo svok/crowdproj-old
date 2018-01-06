@@ -50,6 +50,12 @@ task buildPackagesDev(type: NpmTask, dependsOn: ['npmInstall', ':crowdproj-front
     args = ['run', 'buildPackagesDev']
 }
 
+task buildPackagesProd(type: NpmTask, dependsOn: ['npmInstall', ':crowdproj-front:crowdproj-angular:buildMobileProd']) {
+    group 'build front'
+    description = 'Compile cordova applications for development'
+    args = ['run', 'buildPackagesProd']
+}
+
 //build {
 task build(type: GradleBuild) {
     group 'build front'

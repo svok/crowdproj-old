@@ -19,10 +19,10 @@
   },
   "installed_plugins": {
     "cordova-plugin-console": {
-      "PACKAGE_NAME": "com.crowdproj.app"
+      "PACKAGE_NAME": "com.crowdproj.CrowdProj"
     },
     "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "com.crowdproj.app"
+      "PACKAGE_NAME": "com.crowdproj.CrowdProj"
     }
   },
   "dependent_plugins": {},

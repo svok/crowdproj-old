@@ -53,6 +53,18 @@ task buildMobileDev(type: NpmTask, dependsOn: npmInstall) {
     args = ['run', 'buildMobileDev']
 }
 
+task buildWebProd(type: NpmTask, dependsOn: npmInstall) {
+    group 'build front'
+    description = 'Compile client side folder for development'
+    args = ['run', 'buildWebProd']
+}
+
+task buildMobileProd(type: NpmTask, dependsOn: npmInstall) {
+    group 'build front'
+    description = 'Compile client side folder for development'
+    args = ['run', 'buildMobileProd']
+}
+
 /*
 task buildStandaloneClientWatch(type: NpmTask, dependsOn: npmInstall) {
     group 'build front'

@@ -6,7 +6,8 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "buildPackagesDev": "cordova build"
+        "buildPackagesDev": "cordova build --debug",
+        "buildPackagesProd": "cordova build --release"
     },
     "author": "Sergey Okatov",
     "license": "Apache-2.0",
