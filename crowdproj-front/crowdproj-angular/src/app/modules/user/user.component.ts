@@ -5,7 +5,8 @@ import { Observable } from 'rxjs/Observable';
 import { Router }      from '@angular/router';
 import { ActivatedRoute, Params }   from '@angular/router';
 import { AuthService } from './services/auth.service';
-import { WsService } from './services/ws.service';
+import { AuthWsService } from './services/auth-ws.service';
+import { WebsocketService } from './services/websocket.service';
 import { Signup }      from './models/signup';
 import { Login }       from './models/login';
 import { TitleService } from '../../services/title.service';
@@ -35,7 +36,8 @@ export class UserComponent {
 
     constructor(
         public authService: AuthService,
-        public wsService: WsService,
+        public authWsService: AuthWsService,
+//        public wsService: WebsocketService,
         protected titleService: TitleService,
         protected messageService: MessageService,
         protected route: ActivatedRoute,
@@ -46,7 +48,8 @@ export class UserComponent {
 //        this.titleService.setTitle('Login');
 //        this.state = this.stompService.state
 //            .map((state: number) => StompState[state]);
-        this.wsService.check();
+//        this.wsService.check();
+        this.authWsService.check();
     }
 
     ngAfterViewInit(): void {

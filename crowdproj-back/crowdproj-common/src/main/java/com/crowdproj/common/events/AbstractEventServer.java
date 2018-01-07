@@ -20,11 +20,11 @@ import com.crowdproj.common.events.system.EventInternalDefault;
 )
 @JsonTypeIdResolver(EventTypeIdResolver.class)
 abstract public class AbstractEventServer extends AbstractEvent {
+
     private static AtomicInteger ID_GENERATOR = new AtomicInteger(0);
-
     private final Integer id;
-
     private final Long timestamp;
+    protected String relates;
 
     public AbstractEventServer() {
         this.id = ID_GENERATOR.addAndGet(1);
@@ -37,9 +37,17 @@ abstract public class AbstractEventServer extends AbstractEvent {
         return id;
     }
 
-
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public AbstractEventServer setRelates(String relates) {
+        this.relates = relates;
+        return this;
+    }
+
+    public String getRelates() {
+        return relates;
     }
 
     public String toString() {

@@ -9,7 +9,9 @@ import { HttpModule, JsonpModule } from '@angular/http';
 
 import { AuthGuard }            from './services/auth-guard.service';
 import { AuthService }          from './services/auth.service';
-import { WsService }          from './services/ws.service';
+//import { WsService }          from './services/ws.service';
+import { AuthWsService }          from './services/auth-ws.service';
+import { WebsocketService }          from './services/websocket.service';
 
 import { UserRouting }            from './user.routing';
 import { UserComponent }          from './user.component';
@@ -67,7 +69,8 @@ const stompConfig: StompConfig = {
     providers: [
         AuthGuard,
         AuthService,
-        WsService,
+        AuthWsService,
+        WebsocketService,
         StompService,
         {
             provide: StompConfig,
