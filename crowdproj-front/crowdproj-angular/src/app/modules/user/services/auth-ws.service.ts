@@ -29,7 +29,7 @@ export class AuthWsService {
 
     constructor(wsService: WebsocketService) {
         this.messages = <Subject<MessageInterface>>wsService
-            .connect(WS_URL)
+            .connect(WS_URL, {"type": "session.request-token"})
             .map((response: MessageEvent): MessageInterface => {
                 let data = JSON.parse(response.data);
                 return {

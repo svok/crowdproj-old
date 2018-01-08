@@ -1,5 +1,8 @@
 #!/bin/bash
 
-file=`ls ../libs/crowdproj-gateway-*.jar | sort | tail -1`
+DIR=`dirname "${BASH_SOURCE[0]}"`
+echo $DIR
+file=`ls $DIR/../libs/crowdproj-gateway-*.jar | sort | tail -1`
+echo $file
 
-java -jar $file > gateway.log 2>&1
+/usr/bin/java -Xmx256m -jar $file
