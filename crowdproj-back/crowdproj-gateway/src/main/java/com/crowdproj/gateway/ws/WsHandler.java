@@ -26,7 +26,7 @@ import com.crowdproj.common.events.AbstractEventServer;
 @Service
 public class WsHandler implements WebSocketHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WebSocketHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WsHandler.class);
 
     private static final ObjectMapper mapper = new ObjectMapper();
 

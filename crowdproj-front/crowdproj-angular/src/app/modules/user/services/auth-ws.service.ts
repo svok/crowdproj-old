@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { WebsocketService } from './websocket.service';
+import { WebSocketService } from './websocket.service';
 
 //import { Observable } from 'rxjs/Observable';
 import { Observable, Subject } from 'rxjs/Rx';
@@ -8,6 +8,10 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/throw';
 
 import { MessageInterface } from '../models/message-interface';
+import { WelcomeMessage } from '../models/welcome';
+import { RequestRequestToken } from '../models/request-request-token';
+import { RequestRegisterToken } from '../models/request-register-token';
+import { ResponseNewToken } from '../models/response-new-token';
 import { Login } from '../../../models/login';
 import { Signin } from '../models/signin';
 import { User }  from '../models/user';
@@ -21,20 +25,28 @@ const WS_URL = 'ws://ws.crowdproj.com/';
 
 @Injectable()
 export class AuthWsService {
-    public messages: Subject<MessageInterface>;
+    public messages: Subject<MessageInterface> = new Subject();
 
     isLoggedIn: boolean = false;
     user: User;
-//    private prefixUrl = Config.REST_LOGIN;  // URL to web API
+    private token: string;
 
-    constructor(wsService: WebsocketService) {
-        this.messages = <Subject<MessageInterface>>wsService
-            .connect(WS_URL, {"type": "session.request-token"})
-            .map((response: MessageEvent): MessageInterface => {
-                let data = JSON.parse(response.data);
-                return {
-                    type: data.type,
-                    relates: null
+    constructor(wsService: WebSocketService) {
+        wsService
+            .connect(WS_URL)
+            .subscribe((response: MessageInterface): void => {
+
+                console.log("auth-ws message received");
+                console.log(response);
+
+                if(response instanceof WelcomeMessage) {
+                    if(this.token) {
+                        wsService.sendMessage(new RequestRegisterToken(this.token));
+                    } else {
+                        wsService.sendMessage(new RequestRequestToken());
+                    }
+                } else if(response instanceof ResponseNewToken) {
+                    this.token = response.token;
                 }
             })
         ;
@@ -77,6 +89,7 @@ export class AuthWsService {
 //        return Observable.of(true).delay(1000).do(val => this.isLoggedIn = true);
         return this.messages
             .filter((message: MessageInterface, index: number) => {
+                console.log("filtering message");
                 return message.type == "user.user-info" || (message.type == "system.error" && message.relates == "user.signin");
             })
         ;

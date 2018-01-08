@@ -1,44 +1,73 @@
-import { Injectable } from '@angular/core';
-import * as Rx from 'rxjs/Rx';
+import { Injectable }                           from "@angular/core";
+import { Subject, Observable, Subscription }    from 'rxjs/Rx';
+import { WebSocketSubject }                     from "rxjs/observable/dom/WebSocketSubject";
+
+import { MessageInterface } from '../models/message-interface';
+import { RequestInterface } from '../models/request-interface';
+import { MessageFactory } from '../models/message-factory';
+import { ClosedMessage } from '../models/closed';
+import { WelcomeMessage } from '../models/welcome';
 
 @Injectable()
-export class WebsocketService {
-    constructor() { }
+export class WebSocketService {
 
-    private subject: Rx.Subject<MessageEvent>;
+    private ws: WebSocketSubject<Object>;
+    private socket: Subscription;
+    private url: string;
 
-    public connect(url, dataOnOpen?: Object): Rx.Subject<MessageEvent> {
-        if (!this.subject) {
-            this.subject = this.create(url, dataOnOpen);
-            console.log("Successfully connected: " + url);
-        }
-        return this.subject;
+    public message: Subject<MessageInterface> = new Subject();
+    public opened: Subject<boolean> = new Subject();
+
+    public close(): void {
+        this.socket.unsubscribe();
+        this.ws.complete();
     }
 
-    private create(url, dataOnOpen: Object): Rx.Subject<MessageEvent> {
-        let ws = new WebSocket(url);
+    public sendMessage(message: RequestInterface): void {
+        let str: string = message.stringify();
+        console.log("sendins a message: " + str);
+        this.ws.next(str);
+    }
 
-        let observer = {
-            next: (data: Object) => {
-                if (ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify(data));
+    public connect(url: string): Subject<MessageInterface> {
+        let self = this;
+
+        this.url = url;
+        this.ws = Observable.webSocket({
+            url: this.url,
+            openObserver: {
+                next: value => {
+                    console.log("connected, generating welcome message");
+                    this.message.next(new WelcomeMessage());
                 }
             }
-        }
+        });
+        this.socket = this.ws.subscribe({
 
-        let observable = Rx.Observable.create(
-            (obs: Rx.Observer<MessageEvent>) => {
-                ws.onmessage = obs.next.bind(obs);
-                ws.onerror = obs.error.bind(obs);
-                ws.onclose = obs.complete.bind(obs);
-                if(typeof dataOnOpen !== 'undefined') {
-                    ws.send(JSON.stringify(dataOnOpen));
-                }
-                return ws.close.bind(ws);
+            next: (data:MessageEvent) => {
+                this.message.next(MessageFactory.build(data));
+            },
+
+            error: () => {
+
+                self.opened.next(false);
+                this.message.next(new ClosedMessage());
+
+                self.socket.unsubscribe();
+
+                setTimeout(() => {
+                    self.connect(self.url);
+                }, 1000);
+
+            },
+
+            complete: () => {
+                this.message.next(new ClosedMessage());
             }
-        )
 
-        return Rx.Subject.create(observer, observable);
+        });
+
+        return this.message;
     }
 
 }

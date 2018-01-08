@@ -1,0 +1,16 @@
+[Unit]
+Description=CrowdProj Gate Service
+
+[Service]
+User=nobody
+# The configuration file application.properties should be here:
+#WorkingDirectory=/var/www/crowdproj/java/crowdproj
+
+ExecStart=/var/www/crowdproj/java/crowdproj/bin/crowdproj-gateway-start
+SuccessExitStatus=143
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

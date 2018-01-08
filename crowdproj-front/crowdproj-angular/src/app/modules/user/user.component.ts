@@ -6,7 +6,6 @@ import { Router }      from '@angular/router';
 import { ActivatedRoute, Params }   from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { AuthWsService } from './services/auth-ws.service';
-import { WebsocketService } from './services/websocket.service';
 import { Signup }      from './models/signup';
 import { Login }       from './models/login';
 import { TitleService } from '../../services/title.service';
@@ -37,15 +36,18 @@ export class UserComponent {
     constructor(
         public authService: AuthService,
         public authWsService: AuthWsService,
-//        public wsService: WebsocketService,
         protected titleService: TitleService,
         protected messageService: MessageService,
         protected route: ActivatedRoute,
         public router: Router
-    ) {}
+    ) {
+        authWsService.messages.subscribe(msg => {
+            console.log("Response from websocket: " + msg);
+        });
+    }
 
     ngOnInit(): void {
-//        this.titleService.setTitle('Login');
+        this.titleService.setTitle('Signing In');
 //        this.state = this.stompService.state
 //            .map((state: number) => StompState[state]);
 //        this.wsService.check();
