@@ -4,6 +4,9 @@ This is an experimental framework for building microswervice architecture
 applications. It is build on the following stack of other frameworks and
 libraries.
 
+With this framework you will get as single-page web application as local
+application for Android (and other operting systems).
+
 1. Spring Boot 2 framework is used for building web-gateway between
 backend and frontend applications.
 
