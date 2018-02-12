@@ -1,3 +1,21 @@
+/**
+ *
+ * Copyright © 2017 Sergey Okatov. All rights reserved.
+ * Author: Sergey Okatov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { Injectable }                           from "@angular/core";
 import { Subject, Observable, Subscription }    from 'rxjs/Rx';
 import { WebSocketSubject }                     from "rxjs/observable/dom/WebSocketSubject";
@@ -25,7 +43,7 @@ export class WebSocketService {
 
     public sendMessage(message: RequestInterface): void {
         let str: string = message.stringify();
-        console.log("sendins a message: " + str);
+        console.log("sending a message: " + str);
         this.ws.next(str);
     }
 
@@ -48,7 +66,9 @@ export class WebSocketService {
                 this.message.next(MessageFactory.build(data));
             },
 
-            error: () => {
+            error: (err: any) => {
+                console.log("websocket error");
+                console.log(err);
 
                 self.opened.next(false);
                 this.message.next(new ClosedMessage());
